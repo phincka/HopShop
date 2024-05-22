@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "537286946756",
+    "project_id": "hopshop-b37ee",
+    "storage_bucket": "hopshop-b37ee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:537286946756:android:7aae4c674d24c758453e91",
+        "android_client_info": {
+          "package_name": "com.example.hopshop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVcD1gutC9Pj-FOt-XLPtHUzTH0jS42QA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
