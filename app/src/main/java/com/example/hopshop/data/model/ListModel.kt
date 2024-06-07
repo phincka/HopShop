@@ -8,5 +8,8 @@ data class ListModel (
     val tag: String,
     val sharedIds: List<String>,
     val isShared: Boolean,
-    val itemsCount: ItemsCountModel,
-)
+) {
+    constructor() : this(
+        "", "", "", "", "", emptyList(), false
+    )
+}

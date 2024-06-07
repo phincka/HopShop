@@ -4,6 +4,9 @@ import com.example.hopshop.data.model.ItemsCountModel
 import com.example.hopshop.data.model.ListModel
 import com.example.hopshop.presentation.createList.CreateListState
 import com.example.hopshop.presentation.dashboard.ListsState
+import com.example.hopshop.presentation.dashboard.RemoveSharedListState
+import com.example.hopshop.presentation.dashboard.ShareListState
+import com.example.hopshop.presentation.list.RemoveListState
 
 
 interface ListRepository {
@@ -19,4 +22,23 @@ interface ListRepository {
         sharedMail: String,
         description: String
     ): CreateListState
+
+    suspend fun editList(
+        listId: String,
+        name: String,
+        tag: String,
+        description: String
+    ): CreateListState
+
+    suspend fun shareList(
+        listId: String,
+        email: String,
+    ): ShareListState
+
+    suspend fun removeSharedList(
+        listId: String,
+        email: String,
+    ): RemoveSharedListState
+
+    suspend fun removeList(listId: String): RemoveListState
 }

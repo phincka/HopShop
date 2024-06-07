@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
 import com.example.hopshop.ui.theme.Typography
 
 @Composable
@@ -21,7 +22,7 @@ fun LoadingDialog(
     text: String
 ) {
     Box(
-        modifier = Modifier.fillMaxSize().background(Color.LightGray)
+        modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -30,7 +31,7 @@ fun LoadingDialog(
         ) {
             CircularProgressIndicator(
                 modifier = Modifier.size(64.dp),
-                color = Color.Yellow,
+                color = Color("#7F56D9".toColorInt()),
                 strokeWidth = 6.dp
             )
 

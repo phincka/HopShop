@@ -97,15 +97,20 @@ fun TopBar(
                     modifier = Modifier.padding(start = 10.dp)
                 ) {
                     Text(
-                        text = "Jan Kowalski",
+                        text = user.email,
                         style = Typography.bodyMedium,
                         color = Color("#344054".toColorInt())
                     )
-                    Text(
-                        text = user.email,
-                        style = Typography.bodySmall,
-                        color = Color("#667085".toColorInt())
-                    )
+//                    Text(
+//                        text = "Jan Kowalski",
+//                        style = Typography.bodyMedium,
+//                        color = Color("#344054".toColorInt())
+//                    )
+//                    Text(
+//                        text = user.email,
+//                        style = Typography.bodySmall,
+//                        color = Color("#667085".toColorInt())
+//                    )
                 }
             }
         },

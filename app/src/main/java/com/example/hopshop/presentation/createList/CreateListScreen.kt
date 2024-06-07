@@ -1,6 +1,7 @@
 package com.example.hopshop.presentation.createList
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,43 +48,53 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import androidx.navigation.NavController
 import com.example.hopshop.R
+import com.example.hopshop.data.model.ListModel
+import com.example.hopshop.data.util.AccountUserState
 import com.example.hopshop.presentation.components.LoadingDialog
 import com.example.hopshop.presentation.components.TextError
+import com.example.hopshop.presentation.dashboard.DashboardLayout
+import com.example.hopshop.presentation.destinations.BaseAuthScreenDestination
 import com.example.hopshop.presentation.destinations.ListScreenDestination
+import com.example.hopshop.presentation.list.ListState
 import com.example.hopshop.presentation.main.bottomBarPadding
 import com.example.hopshop.ui.theme.Typography
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Destination
 @Composable
 fun CreateListScreen(
+    listId: String? = null,
     navigator: DestinationsNavigator,
-    viewModel: CreateListViewModel = koinViewModel(),
-    navController: NavController
+    viewModel: CreateListViewModel = koinViewModel(parameters = { parametersOf(listId) }),
+    navController: NavController,
 ) {
+    val createListState = viewModel.createListState.collectAsState().value
+
     Box(
         modifier = Modifier
             .bottomBarPadding(navController = navController)
             .fillMaxSize()
             .background(Color.White)
     ) {
-        when (val createListState = viewModel.createListState.collectAsState().value) {
+        when (createListState) {
             is CreateListState.Loading -> LoadingDialog(stringResource(R.string.home_loading))
 
             is CreateListState.Success -> CreateListLayout(
-                navController = navController,
                 navigator = navigator,
-                viewModel = viewModel
+                list = createListState.list,
+                createList = viewModel::createList,
+                editList = viewModel::editList,
             )
 
-            is CreateListState.Redirect -> navigator.navigate(
-                ListScreenDestination(listId = createListState.listId)
-            )
+            is CreateListState.Redirect -> navigator.navigate(ListScreenDestination(listId = createListState.listId))
 
             is CreateListState.Error -> TextError(createListState.message)
+
+            is CreateListState.None -> Unit
         }
     }
 }
@@ -93,15 +104,15 @@ fun CreateListScreen(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CreateListLayout(
-    navController: NavController,
     navigator: DestinationsNavigator,
-    viewModel: CreateListViewModel
+    list: ListModel?,
+    createList: (name: String, tag: String, sharedMail: String, description: String) -> Unit,
+    editList: (listId: String, name: String, tag: String, description: String) -> Unit,
 ) {
-
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
-    var showBottomSheet by remember { mutableStateOf(false) }
-
+    var listName by remember { mutableStateOf(list?.name ?: "") }
+    var tag by remember { mutableStateOf(list?.tag ?: "") }
+    var sharedMail by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf(list?.description ?: "") }
 
     Column(
         modifier = Modifier.padding(16.dp)
@@ -116,7 +127,7 @@ fun CreateListLayout(
             ),
             navigationIcon = {
                 Text(
-                    text = "Dodaj nową listę zakupów",
+                    text = if (list != null) "Edytuj listę zakupów" else "Dodaj nową listę zakupów",
                     style = Typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = Color("#344054".toColorInt())
@@ -135,11 +146,6 @@ fun CreateListLayout(
                 }
             },
         )
-
-        var listName by remember { mutableStateOf("") }
-        var tag by remember { mutableStateOf("") }
-        var sharedMail by remember { mutableStateOf("") }
-        var description by remember { mutableStateOf("") }
 
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -170,66 +176,6 @@ fun CreateListLayout(
                 )
             )
 
-//            Row(
-//                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.SpaceBetween,
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//            ) {
-//                OutlinedTextField(
-//                    modifier = Modifier.weight(1f),
-//                    value = name1,
-//                    onValueChange = { name1 = it },
-//                    label = {
-//                        Text(stringResource(R.string.hive_name))
-//                    },
-//                    shape = RoundedCornerShape(8.dp),
-//                    colors = TextFieldDefaults.outlinedTextFieldColors(
-//                        focusedBorderColor = Color("#7F56D9".toColorInt()),
-//                        unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
-//                    ),
-//                    textStyle = TextStyle.Default.copy(
-//                        fontSize = 16.sp,
-//                        lineHeight = 24.sp,
-//                        color = Color("#667085".toColorInt())
-//                    ),
-//                    maxLines = 1,
-//                    keyboardActions = KeyboardActions(
-//                        onDone = {}
-//                    ),
-//                    keyboardOptions = KeyboardOptions.Default.copy(
-//                        imeAction = ImeAction.Next
-//                    )
-//                )
-//
-//                Spacer(modifier = Modifier.width(12.dp))
-//
-//                OutlinedTextField(
-//                    modifier = Modifier.weight(1f),
-//                    value = name1,
-//                    onValueChange = { name1 = it },
-//                    label = {
-//                        Text(stringResource(R.string.hive_name))
-//                    },
-//                    shape = RoundedCornerShape(8.dp),
-//                    colors = TextFieldDefaults.outlinedTextFieldColors(
-//                        focusedBorderColor = Color("#7F56D9".toColorInt()),
-//                        unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
-//                    ),
-//                    textStyle = TextStyle.Default.copy(
-//                        fontSize = 16.sp,
-//                        lineHeight = 24.sp,
-//                        color = Color("#667085".toColorInt())
-//                    ),
-//                    maxLines = 1,
-//                    keyboardActions = KeyboardActions(
-//                        onDone = {}
-//                    ),
-//                    keyboardOptions = KeyboardOptions.Default.copy(
-//                        imeAction = ImeAction.Next
-//                    )
-//                )
-//            }
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = tag,
@@ -255,32 +201,36 @@ fun CreateListLayout(
                     imeAction = ImeAction.Next
                 )
             )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = sharedMail,
-                onValueChange = { sharedMail = it },
-                label = {
-                    Text("Udostępnij listę")
-                },
-                placeholder = { Text("Wpisz adres e-mail") },
-                shape = RoundedCornerShape(8.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color("#7F56D9".toColorInt()),
-                    unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
-                ),
-                textStyle = TextStyle.Default.copy(
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp,
-                    color = Color("#667085".toColorInt())
-                ),
-                maxLines = 1,
-                keyboardActions = KeyboardActions(
-                    onDone = {}
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next
+
+            if (list == null) {
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = sharedMail,
+                    onValueChange = { sharedMail = it },
+                    label = {
+                        Text("Udostępnij listę")
+                    },
+                    placeholder = { Text("Wpisz adres e-mail") },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color("#7F56D9".toColorInt()),
+                        unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
+                    ),
+                    textStyle = TextStyle.Default.copy(
+                        fontSize = 16.sp,
+                        lineHeight = 24.sp,
+                        color = Color("#667085".toColorInt())
+                    ),
+                    maxLines = 1,
+                    keyboardActions = KeyboardActions(
+                        onDone = {}
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Next
+                    )
                 )
-            )
+            }
+
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = description,
@@ -313,18 +263,27 @@ fun CreateListLayout(
                 .padding(top = 16.dp)
                 .fillMaxWidth(),
             onClick = {
-                viewModel.createList(
-                    name = listName,
-                    tag = tag,
-                    sharedMail = sharedMail,
-                    description = description
-                )
+                if (list != null) {
+                    editList(
+                        list.id,
+                        listName,
+                        tag,
+                        description
+                    )
+                } else {
+                    createList(
+                        listName,
+                        tag,
+                        sharedMail,
+                        description
+                    )
+                }
             },
             contentPadding = PaddingValues(16.dp),
             shape = RoundedCornerShape(8.dp),
         ) {
             Text(
-                text = "Utwórz listę",
+                text = if (list != null) "Zapisz" else "Utwórz listę",
                 style = Typography.bodyMedium,
             )
         }

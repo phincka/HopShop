@@ -16,7 +16,7 @@ fun Modal(
     icon: ImageVector,
     isModalActive: Boolean,
     onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
+    onConfirmation: (String) -> Unit = { _ -> },
 ) {
     if (!isModalActive) return
     
@@ -39,7 +39,7 @@ fun Modal(
         confirmButton = {
             FilledButton(
                 text = stringResource(R.string.remove_modal_remove),
-                onClick = { onConfirmation() }
+                onClick = { onConfirmation("") }
             )
         },
         dismissButton = {
