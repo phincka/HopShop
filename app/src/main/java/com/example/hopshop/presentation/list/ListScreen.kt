@@ -1,12 +1,8 @@
 package com.example.hopshop.presentation.list
 
 import android.annotation.SuppressLint
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -58,7 +53,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -68,9 +62,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
-import coil.transform.CircleCropTransformation
 import com.example.hopshop.R
 import com.example.hopshop.presentation.components.LoadingDialog
 import com.example.hopshop.presentation.main.bottomBarPadding
@@ -90,35 +81,27 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.window.Dialog
 import com.example.hopshop.data.model.ItemModel
 import com.example.hopshop.data.model.ListModel
 import com.example.hopshop.data.util.DropdownMenuItemData
+import com.example.hopshop.presentation.components.BottomSheet
 import com.example.hopshop.presentation.components.Modal
-import com.example.hopshop.presentation.components.TextError
-import com.example.hopshop.presentation.dashboard.RemoveSharedListState
 import com.example.hopshop.presentation.dashboard.ShareListState
 import com.example.hopshop.presentation.destinations.CreateListScreenDestination
 import com.example.hopshop.presentation.destinations.DashboardScreenDestination
 import com.example.hopshop.presentation.main.SnackbarHandler
 import org.koin.core.parameter.parametersOf
-import com.example.hopshop.presentation.main.getSystemBottomBarHeight
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Destination
 @Composable
@@ -129,12 +112,11 @@ fun ListScreen(
     viewModel: ListViewModel = koinViewModel(parameters = { parametersOf(listId) }),
     navController: NavController
 ) {
-    val sheetState = rememberModalBottomSheetState()
-
     val listState = viewModel.listState.collectAsState().value
     val itemsState = viewModel.itemsState.collectAsState().value
     val itemsCountState = viewModel.itemsCountState.collectAsState().value
     val removeListState = viewModel.removeListState.collectAsState().value
+    val createItemState = viewModel.createItemState.collectAsState().value
     val shareListState = viewModel.shareListState.collectAsState().value
 
     if (removeListState is RemoveListState.Success) navigator.navigate(DashboardScreenDestination)
@@ -170,8 +152,9 @@ fun ListScreen(
                     removeList = viewModel::removeList,
                     shareList = viewModel::shareList,
                     removeSharedList = viewModel::removeSharedList,
-                    sheetState = sheetState,
+                    createItemState = createItemState,
                     shareListState = shareListState,
+                    createItem = viewModel::createItem,
                 )
             }
         }
@@ -194,8 +177,9 @@ fun ListLayout(
     removeList: (String) -> Unit,
     shareList: (String, String) -> Unit,
     removeSharedList: (String, String) -> Unit,
-    sheetState: SheetState,
+    createItemState: CreateItemState,
     shareListState: ShareListState,
+    createItem: (String, String) -> Unit,
 ) {
     var isCreateItemDialogVisible by remember { mutableStateOf(false) }
     var isDropdownMenuVisible by remember { mutableStateOf(false) }
@@ -461,22 +445,31 @@ fun ListLayout(
             }
         }
 
-        CreateItemDialog(
+        BottomSheet(
             isVisible = isCreateItemDialogVisible,
             setVisible = { isCreateItemDialogVisible = it },
-            listId = list.id,
-            sheetState = sheetState,
-//            viewModel = viewModel,
-        )
+        ) {
+            CreateItemDialog(
+                setVisible = { isCreateItemDialogVisible = it },
+                listId = list.id,
+                createItemState = createItemState,
+                createItem = createItem,
+            )
+        }
 
-        ShareListBottomSheet(
-            isVisible = isShareListDialogVisible,
-            setVisible = { isShareListDialogVisible = it },
-            listId = list.id,
-            shareList = shareList,
-            shareListState = shareListState,
-            sheetState = sheetState,
-        )
+
+//        BottomSheet(
+//            isVisible = isShareListDialogVisible,
+//            setVisible = { isShareListDialogVisible = it },
+//            sheetState = sheetState,
+//        ) {
+//            ShareListBottomSheet(
+//                setVisible = { isShareListDialogVisible = it },
+//                listId = list.id,
+//                shareList = shareList,
+//                shareListState = shareListState,
+//            )
+//        }
     }
 }
 
@@ -648,136 +641,81 @@ fun VerticalSpacer(height: Dp) = Spacer(modifier = Modifier.height(height))
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateItemDialog(
-    isVisible: Boolean,
     setVisible: (Boolean) -> Unit,
     listId: String,
-//    viewModel: ListViewModel,
-    sheetState: SheetState,
     createItemState: CreateItemState,
+    createItem: (String, String) -> Unit,
 ) {
-    if (!isVisible) return
-
     var itemName by remember { mutableStateOf("") }
 
-    ModalBottomSheet(
-        onDismissRequest = {
-            setVisible(false)
+    if (createItemState is CreateItemState.Loading) LoadingDialog(stringResource(R.string.home_loading))
+
+    Text(
+        text = "Dodaj element",
+        style = Typography.headlineSmall,
+        fontWeight = FontWeight.Bold,
+        color = Color("#344054".toColorInt())
+    )
+    VerticalSpacer(16.dp)
+
+    OutlinedTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = itemName,
+        onValueChange = { itemName = it },
+        label = {
+            Text("Nazwa listy")
         },
-        sheetState = sheetState
+        shape = RoundedCornerShape(8.dp),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color("#7F56D9".toColorInt()),
+            unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
+        ),
+        textStyle = TextStyle.Default.copy(
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            color = Color("#667085".toColorInt())
+        ),
+        maxLines = 1,
+        keyboardActions = KeyboardActions(
+            onDone = {}
+        ),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Next
+        )
+    )
+
+    VerticalSpacer(24.dp)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.Center,
     ) {
-        if (createItemState is CreateItemState.Loading) LoadingDialog(stringResource(R.string.home_loading))
-
-        Column(
+        Button(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
+                .padding(top = 16.dp)
+                .fillMaxWidth(),
+            onClick = {
+                createItem(itemName, listId)
+                setVisible(false)
+            },
+            contentPadding = PaddingValues(16.dp),
+            shape = RoundedCornerShape(8.dp),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Dodaj item",
-                    style = Typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color("#344054".toColorInt())
-                )
-
-                IconButton(
-                    onClick = { },
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.End
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .background(Color("#F9F5FF".toColorInt()), shape = CircleShape)
-                                .padding(8.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = "Localized description",
-                                tint = Color("#7F56D9".toColorInt()),
-                                modifier = Modifier
-                                    .size(16.dp)
-                            )
-                        }
-                    }
-                }
-            }
-
-            VerticalSpacer(16.dp)
-
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = itemName,
-                onValueChange = { itemName = it },
-                label = {
-                    Text("Nazwa listy")
-                },
-                shape = RoundedCornerShape(8.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color("#7F56D9".toColorInt()),
-                    unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
-                ),
-                textStyle = TextStyle.Default.copy(
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp,
-                    color = Color("#667085".toColorInt())
-                ),
-                maxLines = 1,
-                keyboardActions = KeyboardActions(
-                    onDone = {}
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next
-                )
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Localized description",
+                tint = Color("#ffffff".toColorInt()),
+                modifier = Modifier.size(16.dp)
             )
 
-//                if (viewModel.createItemState.value is CreateItemState.Error) {
-//                    VerticalSpacer(8.dp)
-//                    TextError(text = "Nie udało się dodać elementu.")
-//                }
+            Spacer(modifier = Modifier.width(8.dp))
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                Button(
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                        .fillMaxWidth(),
-                    onClick = {
-//                            viewModel.createItem(
-//                                name = itemName,
-//                                listId = listId
-//                            )
-                    },
-                    contentPadding = PaddingValues(16.dp),
-                    shape = RoundedCornerShape(8.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Localized description",
-                        tint = Color("#ffffff".toColorInt()),
-                        modifier = Modifier.size(16.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = "Add new item",
-                        style = Typography.bodyMedium,
-                    )
-                }
-            }
+            Text(
+                text = "Dodaj",
+                style = Typography.bodyMedium,
+            )
         }
     }
 }
@@ -786,124 +724,107 @@ fun CreateItemDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShareListBottomSheet(
-    isVisible: Boolean,
     setVisible: (Boolean) -> Unit,
     listId: String,
     shareList: (String, String) -> Unit,
     shareListState: ShareListState,
-    sheetState: SheetState,
 ) {
-    if (!isVisible) return
-
     var email by remember { mutableStateOf("") }
 
-    ModalBottomSheet(
-        onDismissRequest = {
-            setVisible(false)
-        },
-        sheetState = sheetState
+    if (shareListState is ShareListState.Loading) LoadingDialog(
+        stringResource(R.string.home_loading)
+    )
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(bottom = getSystemBottomBarHeight()),
+        Text(
+            text = "Udostępnij listę",
+            style = Typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = Color("#344054".toColorInt())
+        )
+
+        IconButton(
+            onClick = { setVisible(false) },
         ) {
-            if (shareListState is ShareListState.Loading) LoadingDialog(
-                stringResource(R.string.home_loading)
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Udostępnij listę",
-                    style = Typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color("#344054".toColorInt())
-                )
-
-                IconButton(
-                    onClick = { setVisible(false) },
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .background(Color("#F9F5FF".toColorInt()), shape = CircleShape)
-                            .padding(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = "Localized description",
-                            tint = Color("#7F56D9".toColorInt()),
-                        )
-                    }
-                }
-            }
-
-            VerticalSpacer(16.dp)
-
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = email,
-                onValueChange = { email = it },
-                label = {
-                    Text("Adres e-mail")
-                },
-                shape = RoundedCornerShape(8.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color("#7F56D9".toColorInt()),
-                    unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
-                ),
-                textStyle = TextStyle.Default.copy(
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp,
-                    color = Color("#667085".toColorInt())
-                ),
-                maxLines = 1,
-                keyboardActions = KeyboardActions(
-                    onDone = {}
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next
-                )
-            )
-
-            VerticalSpacer(24.dp)
-
-            Row(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.Center,
+                    .size(32.dp)
+                    .background(Color("#F9F5FF".toColorInt()), shape = CircleShape)
+                    .padding(8.dp)
             ) {
-                Button(
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                        .fillMaxWidth(),
-                    onClick = {
-                        shareList(listId, email)
-                        setVisible(false)
-                    },
-                    contentPadding = PaddingValues(16.dp),
-                    shape = RoundedCornerShape(8.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Localized description",
-                        tint = Color("#ffffff".toColorInt()),
-                        modifier = Modifier.size(16.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = "Udostępnij",
-                        style = Typography.bodyMedium,
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = "Localized description",
+                    tint = Color("#7F56D9".toColorInt()),
+                )
             }
+        }
+    }
+
+    VerticalSpacer(16.dp)
+
+    OutlinedTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = email,
+        onValueChange = { email = it },
+        label = {
+            Text("Adres e-mail")
+        },
+        shape = RoundedCornerShape(8.dp),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color("#7F56D9".toColorInt()),
+            unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
+        ),
+        textStyle = TextStyle.Default.copy(
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            color = Color("#667085".toColorInt())
+        ),
+        maxLines = 1,
+        keyboardActions = KeyboardActions(
+            onDone = {}
+        ),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Next
+        )
+    )
+
+    VerticalSpacer(24.dp)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        Button(
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .fillMaxWidth(),
+            onClick = {
+                shareList(listId, email)
+                setVisible(false)
+            },
+            contentPadding = PaddingValues(16.dp),
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Localized description",
+                tint = Color("#ffffff".toColorInt()),
+                modifier = Modifier.size(16.dp)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = "Udostępnij",
+                style = Typography.bodyMedium,
+            )
         }
     }
 }

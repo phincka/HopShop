@@ -6,7 +6,10 @@ import com.example.hopshop.data.model.ItemsCountModel
 import com.example.hopshop.data.model.ListModel
 import com.example.hopshop.data.util.AccountUserState
 import com.example.hopshop.domain.usecase.auth.GetCurrentUserUseCase
+import com.example.hopshop.domain.usecase.list.CreateListUseCase
 import com.example.hopshop.domain.usecase.list.GetListsUseCase
+import com.example.hopshop.presentation.createList.CreateListState
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +20,8 @@ import org.koin.android.annotation.KoinViewModel
 class DashboardViewModel(
     private val getListsUseCase: GetListsUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val createListUseCase: CreateListUseCase,
+    private val firebaseFireStore: FirebaseFirestore,
 ) : ViewModel() {
     private val _accountUserState = MutableStateFlow<AccountUserState>(AccountUserState.None)
     val accountUserState = _accountUserState.asStateFlow()
@@ -24,9 +29,18 @@ class DashboardViewModel(
     private val _listsState: MutableStateFlow<ListsState> = MutableStateFlow(ListsState.Loading)
     val listsState: StateFlow<ListsState> = _listsState
 
+    private val _createListState: MutableStateFlow<CreateListState> = MutableStateFlow(CreateListState.None)
+    val createListState: StateFlow<CreateListState> = _createListState
+
     init {
         getCurrentUser()
         getLists()
+
+        firebaseFireStore.collection("lists")
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) return@addSnapshotListener
+                getLists()
+            }
     }
 
     private fun getLists() {
@@ -44,6 +58,18 @@ class DashboardViewModel(
     private fun getCurrentUser() = viewModelScope.launch {
         _accountUserState.value = AccountUserState.Loading
         _accountUserState.value = getCurrentUserUseCase()
+    }
+
+    fun createList(
+        name: String,
+        tag: String,
+        sharedMail: String,
+        description: String
+    ) {
+        viewModelScope.launch {
+            _createListState.value = CreateListState.Loading
+            _createListState.value = createListUseCase(name, tag, sharedMail, description)
+        }
     }
 }
 

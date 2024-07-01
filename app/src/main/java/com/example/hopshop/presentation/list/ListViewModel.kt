@@ -6,20 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.hopshop.data.model.ItemModel
 import com.example.hopshop.data.model.ItemsCountModel
 import com.example.hopshop.data.model.ListModel
-import com.example.hopshop.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.hopshop.domain.usecase.item.CreateItemUseCase
 import com.example.hopshop.domain.usecase.item.GetItemsByListIdUseCase
 import com.example.hopshop.domain.usecase.item.RemoveItemUseCase
 import com.example.hopshop.domain.usecase.item.SetItemSelectedUseCase
 import com.example.hopshop.domain.usecase.list.GetListByIdUseCase
-import com.example.hopshop.domain.usecase.list.GetListItemsCountUseCase
-import com.example.hopshop.domain.usecase.list.GetListsUseCase
 import com.example.hopshop.domain.usecase.list.RemoveListUseCase
 import com.example.hopshop.domain.usecase.list.RemoveSharedListUseCase
 import com.example.hopshop.domain.usecase.list.ShareListUseCase
 import com.example.hopshop.presentation.dashboard.RemoveSharedListState
 import com.example.hopshop.presentation.dashboard.ShareListState
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -137,9 +133,10 @@ class ListViewModel(
         name: String,
         listId: String,
     ) {
+        _createItemState.value = CreateItemState.Loading
+
         viewModelScope.launch {
             try {
-                _createItemState.value = CreateItemState.Loading
                 createItemUseCase(name, listId)
 
                 _createItemState.value = CreateItemState.Success
@@ -148,7 +145,6 @@ class ListViewModel(
             } catch (e: Exception) {
                 _createItemState.value = CreateItemState.Error("${e.message}")
             }
-
         }
     }
 
