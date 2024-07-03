@@ -72,7 +72,7 @@ fun AccountLayout(
                 modifier = Modifier.padding(12.dp)
             ) {
                 when (accountUserState) {
-                    is AccountUserState.Loading -> LoadingDialog(stringResource(R.string.home_loading))
+                    is AccountUserState.Loading -> LoadingDialog(stringResource(R.string.loading))
 
                     is AccountUserState.SignedInState -> {
                         FilledButton(

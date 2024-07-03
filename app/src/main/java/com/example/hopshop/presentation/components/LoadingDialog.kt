@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
+import com.example.hopshop.ui.theme.HopShopAppTheme
 import com.example.hopshop.ui.theme.Typography
 
 @Composable
@@ -31,7 +32,7 @@ fun LoadingDialog(
         ) {
             CircularProgressIndicator(
                 modifier = Modifier.size(64.dp),
-                color = Color("#7F56D9".toColorInt()),
+                color = HopShopAppTheme.colors.purple,
                 strokeWidth = 6.dp
             )
 

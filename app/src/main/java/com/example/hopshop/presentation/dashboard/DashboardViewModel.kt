@@ -8,7 +8,6 @@ import com.example.hopshop.data.util.AccountUserState
 import com.example.hopshop.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.hopshop.domain.usecase.list.CreateListUseCase
 import com.example.hopshop.domain.usecase.list.GetListsUseCase
-import com.example.hopshop.presentation.createList.CreateListState
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -97,4 +96,19 @@ sealed class RemoveSharedListState {
     data object Loading : RemoveSharedListState()
     data object Success : RemoveSharedListState()
     data class Error(val message: String) : RemoveSharedListState()
+}
+
+sealed class CreateListState {
+    data object Loading : CreateListState()
+    data object None : CreateListState()
+    data class Success(val list: ListModel? = null) : CreateListState()
+    data class Redirect(val listId: String) : CreateListState()
+    data class Error(val message: String) : CreateListState()
+}
+
+sealed class UserIdState {
+    data object None : UserIdState()
+    data object Loading : UserIdState()
+    data object Success : UserIdState()
+    data class Error(val message: String) : UserIdState()
 }

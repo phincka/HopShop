@@ -50,7 +50,6 @@
     <string name="home_top_bar_title">hopshop</string>
     <string name="home_floating_action_button">Dodaj ul</string>
     <string name="home_no_hives">Brak dostępnych uli. Musisz najpierw dodać ul.</string>
-    <string name="home_loading">Ładownie…</string>
     <!-- Home screen end -->
 
     <!-- Apiary screen start -->
@@ -60,104 +59,6 @@
     <string name="apiary_type_2">Pasieka wędrowna</string>
     <string name="create_apiary_button">Dodaj pasiekę</string>
     <!-- Apiary screen end -->
-
-
-    <!-- Hive screen start -->
-    <string name="hive_top_bar_title">Ul</string>
-    <string name="home_no_hive">Ul o podanym ID nie istnieje</string>
-    <string name="hive_tab_name_summary">Podsumowanie</string>
-    <string name="hive_tab_name_info">Informacje</string>
-    <string name="hive_tab_name_queen">O matce</string>
-    <string name="hive_nav_add_geo">Dodaj lokalizacje</string>
-    <string name="hive_nav_update_geo">Zmień lokalizacje</string>
-    <string name="hive_nav_show_weather">Sprawdź pogodę</string>
-    <string name="hive_nav_edit_hive">Edytuj ul</string>
-    <string name="hive_nav_remove_hive">Usuń!</string>
-    <string name="hive_remove_modal_title">Usuń ul</string>
-    <string name="hive_remove_modal_text">Czy na pewno chcesz usunąć ul?</string>
-    <string name="hive_loading">Ładownie…</string>
-
-    <string name="hive_name">Nazwa ula</string>
-
-    <string name="hive_family_type_1">Odkład</string>
-    <string name="hive_family_type_2">Produkcyjna</string>
-    <string name="hive_family_type_3">Wychowująca</string>
-
-    <string name="hive_hive_type_1">Wielkopolski</string>
-    <string name="hive_hive_type_2">Dadant</string>
-    <string name="hive_hive_type_3">Warszawski</string>
-
-    <string name="hive_breed_1">Unasienniona</string>
-    <string name="hive_breed_2">Nieunasienniona</string>
-
-    <string name="hive_queen_year_1">Biały</string>
-    <string name="hive_queen_year_2">Żółty</string>
-    <string name="hive_queen_year_3">Czerwony</string>
-    <string name="hive_queen_year_4">Zielony</string>
-    <string name="hive_queen_year_5">Niebieski</string>
-
-    <string name="hive_family_type">Typ rodziny</string>
-    <string name="hive_hive_type">Rodzaj ula</string>
-    <string name="hive_queen_breed">Rasa</string>
-    <string name="hive_queen_line">Linia</string>
-    <string name="hive_queen_year">Oznaczenie matki</string>
-    <string name="hive_queen_state">Stan matki</string>
-    <string name="hive_queen_added_date">Data poddania matki</string>
-    <string name="hive_created_date">Data stworzenia ula</string>
-    <string name="hive_queen_note">Notatka</string>
-    <!-- Hive screen end -->
-
-    <!-- Overview screen start -->
-    <string name="overview_strengt">Siła rodziny</string>
-    <string name="overview_strengts_1">Słaba</string>
-    <string name="overview_strengts_2">Normalna</string>
-    <string name="overview_strengts_3">Silna</string>
-
-    <string name="overview_mood">Nastrój</string>
-    <string name="overview_moods_1">Łagodny</string>
-    <string name="overview_moods_2">Normalny</string>
-    <string name="overview_moods_3">Agresywny</string>
-
-    <string name="overview_numbers_1">1</string>
-    <string name="overview_numbers_2">2</string>
-    <string name="overview_numbers_3">3</string>
-    <string name="overview_numbers_4">4</string>
-    <string name="overview_numbers_5">5</string>
-    <string name="overview_numbers_6">6</string>
-    <string name="overview_numbers_7">7</string>
-    <string name="overview_numbers_8">8</string>
-    <string name="overview_numbers_9">9</string>
-    <string name="overview_numbers_10">10</string>
-
-
-    <string name="create_hive_form_queen_year">Oznaczenie matki</string>
-    <string name="create_hive_form_queen_state">Stan</string>
-    <string name="create_hive_form_queen_note">Notatka</string>
-    <string name="create_hive_form_button">Utwórz ul</string>
-    <!-- Overview screen end -->
-
-    <!-- Add hive location screen start -->
-    <string name="add_hive_location_title">Dodaj lokalizacje</string>
-    <string name="add_hive_location_snackbar_update">Zmieniono położenie ula</string>
-    <string name="add_hive_location_snackbar_create">Dodano nową lokalizację ula</string>
-    <string name="add_hive_location_snackbar_close">Zamknij</string>
-    <string name="add_hive_location_marker_title">Ul: </string>
-    <string name="add_hive_location_marker_snippet">Najlepszy zasięg lotu pszczoły: 1,5km.</string>
-    <string name="add_hive_location_loading">Ładownie…</string>
-    <!-- Add hive location screen end -->
-
-    <!-- Weather screen start -->
-    <string name="weather_screen_no_location">Ul nie posiada lokalizacji</string>
-    <string name="weather_screen_loading">Ładowanie…</string>
-    <string name="weather_screen_today">Dziś</string>
-    <string name="weather_screen_today_prev">Cofnij</string>
-    <string name="weather_screen_today_next">Pokaż następne</string>
-    <string name="weather_screen_daily">Najbliższe dni</string>
-    <!-- Weather screen end -->
-
-    <!-- Weather screen start -->
-    <string name="weather_top_title">Sprawdź pogodę</string>
-    <!-- Create hive screen end -->
 
     <!-- Notifications channels start -->
     <string name="notification_channel_title">Nowy kanał powiadomień</string>
@@ -183,4 +84,40 @@
     <string name="home_screen">Home</string>
     <string name="hive_screen">Hive</string>
     <!-- Remove modal end -->
+
+    <!-- Dashboard start -->
+    <string name="dashboard_tile_lists">Listy zakupów</string>
+    <string name="dashboard_tile_items">Wszystkie zakupy</string>
+    <string name="dashboard_topbar_title">Dashboard</string>
+    <string name="loading">Ładownie…</string>
+    <string name="create_list">Dodaj listę</string>
+    <string name="list_name">Nazwa listy</string>
+    <string name="category">Kategoria</string>
+    <string name="share">Udostępnij listę</string>
+    <string name="share_success">Pomyślnie udostępniono listę</string>
+    <string name="edit_list">Edytuj listę</string>
+    <string name="selected_items">Kupiono</string>
+
+    <string name="remove_modal_title">Usuń!</string>
+    <string name="remove_modal_text">Usuń?</string>
+
+    <string name="empty_list_title">Lista jest pusta</string>
+    <string name="empty_list_text">Dodaj zakupy do tej listy i biegnij na zakupy!</string>
+
+    <string name="modal_create_item_title">Dodaj element</string>
+
+
+
+
+
+    <string name="form_email_label">Wpisz adres e-mail</string>
+    <string name="form_description_label">Opis</string>
+    <string name="form_create_list_button">Dodaj listę</string>
+    <string name="form_create_item_label">Nazwa listy</string>
+    <!-- Dashboard end -->
+
+    <!-- View in progress start -->
+    <string name="in_progress_title">Dostępne już wkrótce.</string>
+    <string name="in_progress_text">Trwają prace nad tym widokiem. Zapraszam wkrótce.</string>
+    <!-- View in progress end -->
 </resources>

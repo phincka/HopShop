@@ -42,6 +42,7 @@ import coil.transform.CircleCropTransformation
 import com.example.hopshop.data.model.UserModel
 import com.example.hopshop.data.util.DropdownMenuItemData
 import com.example.hopshop.presentation.destinations.AccountScreenDestination
+import com.example.hopshop.ui.theme.HopShopAppTheme
 import com.example.hopshop.ui.theme.Typography
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -83,11 +84,11 @@ fun TopBar(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color("#F9F5FF".toColorInt()))
+                        .background(HopShopAppTheme.colors.purpleWhite)
                 ) {
                     Text(
                         text = user.email.first().toString().uppercase(),
-                        color = Color("#7F56D9".toColorInt()),
+                        color = HopShopAppTheme.colors.purple,
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold,
                     )
@@ -99,17 +100,17 @@ fun TopBar(
                     Text(
                         text = user.email,
                         style = Typography.bodyMedium,
-                        color = Color("#344054".toColorInt())
+                        color = HopShopAppTheme.colors.black,
                     )
 //                    Text(
 //                        text = "Jan Kowalski",
 //                        style = Typography.bodyMedium,
-//                        color = Color("#344054".toColorInt())
+//                        color = HopShopAppTheme.colors.black
 //                    )
 //                    Text(
 //                        text = user.email,
 //                        style = Typography.bodySmall,
-//                        color = Color("#667085".toColorInt())
+//                        color = HopShopAppTheme.colors.grey,
 //                    )
                 }
             }
@@ -123,13 +124,16 @@ fun TopBar(
                 ) {
                     Box(
                         modifier = Modifier
-                            .background(Color("#F9F5FF".toColorInt()), shape = CircleShape)
+                            .background(
+                                HopShopAppTheme.colors.purpleWhite,
+                                shape = CircleShape
+                            )
                             .padding(8.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Notifications,
                             contentDescription = "Localized description",
-                            tint = Color("#7F56D9".toColorInt()),
+                            tint = HopShopAppTheme.colors.purple,
                         )
                     }
                 }
@@ -142,13 +146,16 @@ fun TopBar(
 
                     Box(
                         modifier = Modifier
-                            .background(Color("#F9FAFB".toColorInt()), shape = CircleShape)
+                            .background(
+                                HopShopAppTheme.colors.grey5,
+                                shape = CircleShape
+                            )
                             .padding(8.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Settings,
                             contentDescription = "Localized description",
-                            tint = Color("#667085".toColorInt()),
+                            tint = HopShopAppTheme.colors.grey,
                         )
                     }
                 }

@@ -97,9 +97,9 @@ import com.example.hopshop.data.util.DropdownMenuItemData
 import com.example.hopshop.presentation.components.BottomSheet
 import com.example.hopshop.presentation.components.Modal
 import com.example.hopshop.presentation.dashboard.ShareListState
-import com.example.hopshop.presentation.destinations.CreateListScreenDestination
 import com.example.hopshop.presentation.destinations.DashboardScreenDestination
 import com.example.hopshop.presentation.main.SnackbarHandler
+import com.example.hopshop.ui.theme.HopShopAppTheme
 import org.koin.core.parameter.parametersOf
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -138,9 +138,7 @@ fun ListScreen(
     ) {
         when (listState) {
             is ListState.Error -> Unit
-
-            is ListState.Loading -> LoadingDialog(stringResource(R.string.home_loading))
-
+            is ListState.Loading -> LoadingDialog(stringResource(R.string.loading))
             is ListState.Success -> {
                 ListLayout(
                     navigator = navigator,
@@ -189,14 +187,14 @@ fun ListLayout(
     val menuItems = listOf(
         DropdownMenuItemData(
             icon = Icons.Outlined.Edit,
-            text = "Edytuj listę",
+            text = stringResource(R.string.edit_list),
             onClick = {
-                navigator.navigate(CreateListScreenDestination(listId = list.id))
+//                navigator.navigate(CreateListScreenDestination(listId = list.id))
             }
         ),
         DropdownMenuItemData(
             icon = Icons.Outlined.Share,
-            text = "Udostępnij listę",
+            text = stringResource(R.string.share),
             onClick = {
                 isShareListDialogVisible = true
                 isDropdownMenuVisible = false
@@ -204,7 +202,7 @@ fun ListLayout(
         ),
         DropdownMenuItemData(
             icon = Icons.Outlined.Clear,
-            text = stringResource(R.string.hive_nav_remove_hive),
+            text = stringResource(R.string.loading), //usuń,
             onClick = {
                 isModalActive = true
             }
@@ -228,7 +226,7 @@ fun ListLayout(
                                 text = list.name,
                                 style = Typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = Color("#344054".toColorInt())
+                                color = HopShopAppTheme.colors.black,
                             )
 
                             if (list.isShared) {
@@ -237,7 +235,7 @@ fun ListLayout(
                                 Icon(
                                     imageVector = Icons.Filled.FolderShared,
                                     contentDescription = "Localized description",
-                                    tint = Color("#7F56D9".toColorInt()),
+                                    tint = HopShopAppTheme.colors.purple,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -263,7 +261,7 @@ fun ListLayout(
                                     Box(
                                         modifier = Modifier
                                             .background(
-                                                Color("#F9F5FF".toColorInt()),
+                                                HopShopAppTheme.colors.purpleWhite,
                                                 shape = CircleShape
                                             )
                                             .padding(8.dp)
@@ -271,7 +269,7 @@ fun ListLayout(
                                         Icon(
                                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                             contentDescription = "Localized description",
-                                            tint = Color("#7F56D9".toColorInt()),
+                                            tint = HopShopAppTheme.colors.purple,
                                             modifier = Modifier
                                         )
                                     }
@@ -294,7 +292,7 @@ fun ListLayout(
                                     Box(
                                         modifier = Modifier
                                             .background(
-                                                Color("#F9F5FF".toColorInt()),
+                                                HopShopAppTheme.colors.purpleWhite,
                                                 shape = CircleShape
                                             )
                                             .padding(8.dp)
@@ -302,7 +300,7 @@ fun ListLayout(
                                         Icon(
                                             imageVector = Icons.Filled.MoreVert,
                                             contentDescription = "Localized description",
-                                            tint = Color("#7F56D9".toColorInt()),
+                                            tint = HopShopAppTheme.colors.purple,
                                         )
                                     }
                                 }
@@ -324,17 +322,17 @@ fun ListLayout(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.List,
                                 contentDescription = "Localized description",
-                                tint = Color("#667085".toColorInt()),
+                                tint = HopShopAppTheme.colors.grey,
                                 modifier = Modifier.size(16.dp)
                             )
 
                             Spacer(modifier = Modifier.width(4.dp))
 
                             Text(
-                                text = "Kupiono ${itemsCount.itemsCount.selected} z ${itemsCount.itemsCount.items}",
+                                text = "${stringResource(R.string.selected_items)} ${itemsCount.itemsCount.selected} z ${itemsCount.itemsCount.items}",
                                 style = Typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
-                                color = Color("#667085".toColorInt()),
+                                color = HopShopAppTheme.colors.grey,
                             )
                         }
                     }
@@ -346,7 +344,7 @@ fun ListLayout(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Label,
                                 contentDescription = "Localized description",
-                                tint = Color("#667085".toColorInt()),
+                                tint = HopShopAppTheme.colors.grey,
                                 modifier = Modifier
                                     .size(16.dp)
                                     .rotate(-45f)
@@ -358,7 +356,7 @@ fun ListLayout(
                                 text = list.tag,
                                 style = Typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
-                                color = Color("#667085".toColorInt()),
+                                color = HopShopAppTheme.colors.grey,
                             )
                         }
                     }
@@ -372,8 +370,8 @@ fun ListLayout(
             )
 
             Modal(
-                dialogTitle = stringResource(R.string.hive_remove_modal_title),
-                dialogText = stringResource(R.string.hive_remove_modal_text),
+                dialogTitle = stringResource(R.string.remove_modal_title),
+                dialogText = stringResource(R.string.remove_modal_text),
                 icon = Icons.Filled.Warning,
                 isModalActive = isModalActive,
                 onDismissRequest = { isModalActive = false },
@@ -398,7 +396,7 @@ fun ListLayout(
             when (itemsState) {
                 is ItemsState.Error -> Unit
 
-                is ItemsState.Loading -> LoadingDialog(stringResource(R.string.home_loading))
+                is ItemsState.Loading -> LoadingDialog(stringResource(R.string.loading))
 
                 is ItemsState.Success -> {
                     if (itemsState.items.isNotEmpty()) {
@@ -418,23 +416,23 @@ fun ListLayout(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Label,
                                 contentDescription = "Localized description",
-                                tint = Color("#7F56D9".toColorInt()),
+                                tint = HopShopAppTheme.colors.purple,
                                 modifier = Modifier.size(56.dp)
                             )
 
                             Text(
-                                text = "Add items to your list",
+                                text = stringResource(R.string.empty_list_title),
                                 style = Typography.headlineSmall,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color("#101828".toColorInt()),
+                                color = HopShopAppTheme.colors.black90,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.width(264.dp)
                             )
 
                             Text(
-                                text = "Your smart shopping list will shown here. start by creating a new list",
+                                text = stringResource(R.string.empty_list_text),
                                 style = Typography.bodyMedium,
-                                color = Color("#667085".toColorInt()),
+                                color = HopShopAppTheme.colors.grey,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.width(264.dp)
                             )
@@ -521,7 +519,7 @@ fun SwipeToDismissItem(
     )
     val color: Color = when (swipeToDismissState.dismissDirection) {
         SwipeToDismissBoxValue.StartToEnd -> {
-            Color.Red
+            HopShopAppTheme.colors.red
         }
 
         SwipeToDismissBoxValue.EndToStart -> {
@@ -598,14 +596,14 @@ fun ChangeableButton(
                 Icon(
                     imageVector = Icons.Filled.CheckBox,
                     contentDescription = "Localized description",
-                    tint = Color("#7F56D9".toColorInt()),
+                    tint = HopShopAppTheme.colors.purple,
                     modifier = Modifier.size(16.dp)
                 )
             } else {
                 Icon(
                     imageVector = Icons.Filled.CheckBoxOutlineBlank,
                     contentDescription = "Localized description",
-                    tint = Color("#D0D5DD".toColorInt()),
+                    tint = HopShopAppTheme.colors.gray30,
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -616,19 +614,13 @@ fun ChangeableButton(
             fontWeight = FontWeight.Medium
         ),
         colors = TextFieldDefaults.colors(
-            disabledContainerColor = if (isSelected && !isEditing) Color("#F9F5FF".toColorInt()) else Color(
-                "#FCFCFD".toColorInt()
-            ),
-            disabledIndicatorColor = if (isSelected && !isEditing) Color("#D6BBFB".toColorInt()) else Color(
-                "#EAECF0".toColorInt()
-            ),
-            disabledTextColor = if (isSelected && !isEditing) Color("#7F56D9".toColorInt()) else Color(
-                "#344054".toColorInt()
-            ),
+            disabledContainerColor = if (isSelected && !isEditing) HopShopAppTheme.colors.purpleWhite else HopShopAppTheme.colors.grey20,
+            disabledIndicatorColor = if (isSelected && !isEditing) HopShopAppTheme.colors.purple50 else HopShopAppTheme.colors.grey50,
+            disabledTextColor = if (isSelected && !isEditing) HopShopAppTheme.colors.purple else HopShopAppTheme.colors.black,
 
-            focusedContainerColor = Color("#FCFCFD".toColorInt()),
-            focusedIndicatorColor = Color("#EAECF0".toColorInt()),
-            focusedTextColor = Color("#344054".toColorInt()),
+            focusedContainerColor = HopShopAppTheme.colors.grey20,
+            focusedIndicatorColor = HopShopAppTheme.colors.grey50,
+            focusedTextColor = HopShopAppTheme.colors.black,
         )
     )
 }
@@ -648,13 +640,13 @@ fun CreateItemDialog(
 ) {
     var itemName by remember { mutableStateOf("") }
 
-    if (createItemState is CreateItemState.Loading) LoadingDialog(stringResource(R.string.home_loading))
+    if (createItemState is CreateItemState.Loading) LoadingDialog(stringResource(R.string.loading))
 
     Text(
-        text = "Dodaj element",
+        text = stringResource(R.string.modal_create_item_title),
         style = Typography.headlineSmall,
         fontWeight = FontWeight.Bold,
-        color = Color("#344054".toColorInt())
+        color = HopShopAppTheme.colors.black,
     )
     VerticalSpacer(16.dp)
 
@@ -663,17 +655,17 @@ fun CreateItemDialog(
         value = itemName,
         onValueChange = { itemName = it },
         label = {
-            Text("Nazwa listy")
+            Text(stringResource(R.string.form_create_item_label))
         },
         shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color("#7F56D9".toColorInt()),
-            unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
+            focusedBorderColor = HopShopAppTheme.colors.purple,
+            unfocusedBorderColor = HopShopAppTheme.colors.gray30,
         ),
         textStyle = TextStyle.Default.copy(
             fontSize = 16.sp,
             lineHeight = 24.sp,
-            color = Color("#667085".toColorInt())
+            color = HopShopAppTheme.colors.grey,
         ),
         maxLines = 1,
         keyboardActions = KeyboardActions(
@@ -706,7 +698,7 @@ fun CreateItemDialog(
             Icon(
                 imageVector = Icons.Filled.Add,
                 contentDescription = "Localized description",
-                tint = Color("#ffffff".toColorInt()),
+                tint = HopShopAppTheme.colors.white,
                 modifier = Modifier.size(16.dp)
             )
 
@@ -732,7 +724,7 @@ fun ShareListBottomSheet(
     var email by remember { mutableStateOf("") }
 
     if (shareListState is ShareListState.Loading) LoadingDialog(
-        stringResource(R.string.home_loading)
+        stringResource(R.string.loading)
     )
 
     Row(
@@ -744,7 +736,7 @@ fun ShareListBottomSheet(
             text = "Udostępnij listę",
             style = Typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = Color("#344054".toColorInt())
+            color = HopShopAppTheme.colors.black,
         )
 
         IconButton(
@@ -753,13 +745,16 @@ fun ShareListBottomSheet(
             Box(
                 modifier = Modifier
                     .size(32.dp)
-                    .background(Color("#F9F5FF".toColorInt()), shape = CircleShape)
+                    .background(
+                        HopShopAppTheme.colors.purpleWhite,
+                        shape = CircleShape
+                    )
                     .padding(8.dp)
             ) {
                 Icon(
                     imageVector = Icons.Filled.Close,
                     contentDescription = "Localized description",
-                    tint = Color("#7F56D9".toColorInt()),
+                    tint = HopShopAppTheme.colors.purple,
                 )
             }
         }
@@ -776,13 +771,13 @@ fun ShareListBottomSheet(
         },
         shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color("#7F56D9".toColorInt()),
-            unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
+            focusedBorderColor = HopShopAppTheme.colors.purple,
+            unfocusedBorderColor = HopShopAppTheme.colors.gray30,
         ),
         textStyle = TextStyle.Default.copy(
             fontSize = 16.sp,
             lineHeight = 24.sp,
-            color = Color("#667085".toColorInt())
+            color = HopShopAppTheme.colors.grey,
         ),
         maxLines = 1,
         keyboardActions = KeyboardActions(
@@ -815,7 +810,7 @@ fun ShareListBottomSheet(
             Icon(
                 imageVector = Icons.Filled.Add,
                 contentDescription = "Localized description",
-                tint = Color("#ffffff".toColorInt()),
+                tint = HopShopAppTheme.colors.white,
                 modifier = Modifier.size(16.dp)
             )
 

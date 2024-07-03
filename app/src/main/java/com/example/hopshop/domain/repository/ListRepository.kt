@@ -2,7 +2,7 @@ package com.example.hopshop.domain.repository
 
 import com.example.hopshop.data.model.ItemsCountModel
 import com.example.hopshop.data.model.ListModel
-import com.example.hopshop.presentation.createList.CreateListState
+import com.example.hopshop.presentation.dashboard.CreateListState
 import com.example.hopshop.presentation.dashboard.ListsState
 import com.example.hopshop.presentation.dashboard.RemoveSharedListState
 import com.example.hopshop.presentation.dashboard.ShareListState

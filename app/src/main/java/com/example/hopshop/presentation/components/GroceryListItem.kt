@@ -16,6 +16,7 @@ import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.FolderShared
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +32,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.example.hopshop.data.model.ListModel
 import com.example.hopshop.presentation.destinations.ListScreenDestination
+import com.example.hopshop.ui.theme.HopShopAppTheme
+import com.example.hopshop.ui.theme.HopShopColors
 import com.example.hopshop.ui.theme.Typography
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -41,9 +44,9 @@ fun GroceryListItem(
 ) {
     OutlinedCard(
         colors = CardDefaults.cardColors(
-            containerColor = Color("#FCFCFD".toColorInt()),
+            containerColor = HopShopAppTheme.colors.grey20,
         ),
-        border = BorderStroke(1.dp, Color("#EAECF0".toColorInt())),
+        border = BorderStroke(1.dp, HopShopAppTheme.colors.grey50),
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
@@ -69,7 +72,7 @@ fun GroceryListItem(
                         fontSize = 18.sp,
                         lineHeight = 28.sp,
                     ),
-                    color = Color("#344054".toColorInt()),
+                    color = HopShopAppTheme.colors.black,
                     textAlign = TextAlign.Center,
                 )
 
@@ -80,7 +83,7 @@ fun GroceryListItem(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Label,
                             contentDescription = "Localized description",
-                            tint = Color("#667085".toColorInt()),
+                            tint = HopShopAppTheme.colors.grey,
                             modifier = Modifier
                                 .size(16.dp)
                                 .rotate(-45f)
@@ -92,7 +95,7 @@ fun GroceryListItem(
                             text = list.tag,
                             style = Typography.bodyMedium,
                             fontWeight = FontWeight.Medium,
-                            color = Color("#667085".toColorInt()),
+                            color = HopShopAppTheme.colors.grey,
                         )
                     }
                 }
@@ -107,7 +110,7 @@ fun GroceryListItem(
                     Icon(
                         imageVector = Icons.Filled.FolderShared,
                         contentDescription = "Localized description",
-                        tint = Color("#7F56D9".toColorInt()),
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
 
@@ -117,7 +120,7 @@ fun GroceryListItem(
                         text = "Lista użytkownika Paweł",
                         style = Typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
-                        color = Color("#667085".toColorInt()),
+                        color = HopShopAppTheme.colors.grey,
                     )
                 }
             }

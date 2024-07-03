@@ -63,10 +63,10 @@ import com.example.hopshop.presentation.components.GroceryListItem
 import com.example.hopshop.presentation.components.LoadingDialog
 import com.example.hopshop.presentation.components.TextError
 import com.example.hopshop.presentation.components.TopBar
-import com.example.hopshop.presentation.createList.CreateListState
 import com.example.hopshop.presentation.destinations.BaseAuthScreenDestination
 import com.example.hopshop.presentation.list.VerticalSpacer
 import com.example.hopshop.presentation.main.bottomBarPadding
+import com.example.hopshop.ui.theme.HopShopAppTheme
 import com.example.hopshop.ui.theme.Typography
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -94,8 +94,7 @@ fun DashboardScreen(
             .background(Color.Red)
     ) {
         when (val accountUserState = viewModel.accountUserState.collectAsState().value) {
-            is AccountUserState.Loading -> LoadingDialog(stringResource(R.string.home_loading))
-
+            is AccountUserState.Loading -> LoadingDialog(stringResource(R.string.loading))
             is AccountUserState.SignedInState -> DashboardLayout(
                 navigator = navigator,
                 listsState = listsState,
@@ -105,11 +104,8 @@ fun DashboardScreen(
                 createList = viewModel::createList,
                 createListState = createListState,
             )
-
             is AccountUserState.GuestState -> navigator.navigate(BaseAuthScreenDestination)
-
             is AccountUserState.Error -> TextError(accountUserState.message)
-
             is AccountUserState.None -> Unit
         }
     }
@@ -128,7 +124,10 @@ fun DashboardLayout(
     createListState: CreateListState,
 ) {
     var titlesState by remember { mutableIntStateOf(0) }
-    val titles = listOf("Listy zakupów", "Wszystkie zakupy")
+    val titles = listOf(
+        stringResource(R.string.dashboard_tile_lists),
+        stringResource(R.string.dashboard_tile_items)
+    )
 
     Scaffold(
         topBar = {},
@@ -148,13 +147,15 @@ fun DashboardLayout(
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
             TopBar(
-                title = "Dashboard",
+                title = stringResource(R.string.dashboard_topbar_title),
                 navigator = navigator,
                 user = user
             )
 
             Column(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 PrimaryTabRow(
@@ -179,7 +180,7 @@ fun DashboardLayout(
                                     overflow = TextOverflow.Ellipsis,
                                     style = Typography.bodyMedium,
                                     fontWeight = FontWeight.Medium,
-                                    color = Color("#344054".toColorInt())
+                                    color = HopShopAppTheme.colors.black,
                                 )
                             },
                             modifier = if (titlesState == index) {
@@ -187,13 +188,13 @@ fun DashboardLayout(
                                     .height(40.dp)
                                     .clip(roundedCornerShape)
                                     .background(Color.White)
-                                    .border(1.dp, Color("#EAECF0".toColorInt()), roundedCornerShape)
+                                    .border(1.dp, HopShopAppTheme.colors.grey50, roundedCornerShape)
                             } else {
                                 Modifier
                                     .height(40.dp)
                                     .clip(roundedCornerShape)
-                                    .background(Color("#F2F4F7".toColorInt()))
-                                    .border(1.dp, Color("#EAECF0".toColorInt()), roundedCornerShape)
+                                    .background(HopShopAppTheme.colors.grey10)
+                                    .border(1.dp, HopShopAppTheme.colors.grey50, roundedCornerShape)
                             }
                         )
                     }
@@ -203,7 +204,7 @@ fun DashboardLayout(
                     0 -> when (listsState) {
                         is ListsState.None -> Unit
 
-                        is ListsState.Loading -> LoadingDialog(stringResource(R.string.home_loading))
+                        is ListsState.Loading -> LoadingDialog(stringResource(R.string.loading))
 
                         is ListsState.Success -> {
                             LazyColumn(
@@ -222,7 +223,7 @@ fun DashboardLayout(
 
                         is ListsState.Error -> Unit
                     }
-
+                    // TODO Migrate to custom component
                     1 -> Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -233,27 +234,26 @@ fun DashboardLayout(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Label,
                             contentDescription = "Localized description",
-                            tint = Color("#7F56D9".toColorInt()),
+                            tint = HopShopAppTheme.colors.purple,
                             modifier = Modifier.size(56.dp)
                         )
 
                         Text(
-                            text = "Dostępne już wkrótce.",
+                            text = stringResource(R.string.in_progress_title),
                             style = Typography.headlineSmall,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color("#101828".toColorInt()),
+                            color = HopShopAppTheme.colors.black90,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.width(264.dp)
                         )
 
                         Text(
-                            text = "Trwają prace nad tym widokiem. Zapraszam wkrótce.",
+                            text = stringResource(R.string.in_progress_text),
                             style = Typography.bodyMedium,
-                            color = Color("#667085".toColorInt()),
+                            color = HopShopAppTheme.colors.grey,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.width(264.dp)
                         )
-
                     }
                 }
             }
@@ -287,14 +287,14 @@ fun CreateListBottomSheet(
     var description by remember { mutableStateOf(list?.description ?: "") }
 
     if (createListState is CreateListState.Loading) LoadingDialog(
-        stringResource(R.string.home_loading)
+        stringResource(R.string.loading)
     )
 
     Text(
-        text = "Dodaj listę",
+        text = stringResource(R.string.create_list),
         style = Typography.headlineSmall,
         fontWeight = FontWeight.Bold,
-        color = Color("#344054".toColorInt())
+        color = HopShopAppTheme.colors.black,
     )
 
     VerticalSpacer(16.dp)
@@ -304,17 +304,17 @@ fun CreateListBottomSheet(
         value = listName,
         onValueChange = { listName = it },
         label = {
-            Text("Nazwa listy")
+            Text(stringResource(R.string.list_name))
         },
         shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color("#7F56D9".toColorInt()),
-            unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
+            focusedBorderColor = HopShopAppTheme.colors.purple,
+            unfocusedBorderColor = HopShopAppTheme.colors.gray30,
         ),
         textStyle = TextStyle.Default.copy(
             fontSize = 16.sp,
             lineHeight = 24.sp,
-            color = Color("#667085".toColorInt())
+            color = HopShopAppTheme.colors.grey,
         ),
         maxLines = 1,
         keyboardActions = KeyboardActions(
@@ -330,17 +330,17 @@ fun CreateListBottomSheet(
         value = tag,
         onValueChange = { tag = it },
         label = {
-            Text("Kategoria")
+            Text(stringResource(R.string.category))
         },
         shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color("#7F56D9".toColorInt()),
-            unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
+            focusedBorderColor = HopShopAppTheme.colors.purple,
+            unfocusedBorderColor = HopShopAppTheme.colors.gray30,
         ),
         textStyle = TextStyle.Default.copy(
             fontSize = 16.sp,
             lineHeight = 24.sp,
-            color = Color("#667085".toColorInt())
+            color = HopShopAppTheme.colors.grey,
         ),
         maxLines = 1,
         keyboardActions = KeyboardActions(
@@ -357,18 +357,18 @@ fun CreateListBottomSheet(
             value = sharedMail,
             onValueChange = { sharedMail = it },
             label = {
-                Text("Udostępnij listę")
+                Text(stringResource(R.string.share))
             },
-            placeholder = { Text("Wpisz adres e-mail") },
+            placeholder = { Text(stringResource(R.string.form_email_label)) },
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color("#7F56D9".toColorInt()),
-                unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
+                focusedBorderColor = HopShopAppTheme.colors.purple,
+                unfocusedBorderColor = HopShopAppTheme.colors.gray30,
             ),
             textStyle = TextStyle.Default.copy(
                 fontSize = 16.sp,
                 lineHeight = 24.sp,
-                color = Color("#667085".toColorInt())
+                color = HopShopAppTheme.colors.grey,
             ),
             maxLines = 1,
             keyboardActions = KeyboardActions(
@@ -385,17 +385,17 @@ fun CreateListBottomSheet(
         value = description,
         onValueChange = { description = it },
         label = {
-            Text("Opis")
+            Text(stringResource(R.string.form_description_label))
         },
         shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color("#7F56D9".toColorInt()),
-            unfocusedBorderColor = Color("#D0D5DD".toColorInt()),
+            focusedBorderColor = HopShopAppTheme.colors.purple,
+            unfocusedBorderColor = HopShopAppTheme.colors.gray30,
         ),
         textStyle = TextStyle.Default.copy(
             fontSize = 16.sp,
             lineHeight = 24.sp,
-            color = Color("#667085".toColorInt())
+            color = HopShopAppTheme.colors.grey,
         ),
         minLines = 3,
         keyboardActions = KeyboardActions(
@@ -425,14 +425,14 @@ fun CreateListBottomSheet(
         Icon(
             imageVector = Icons.Filled.Add,
             contentDescription = "Localized description",
-            tint = Color("#ffffff".toColorInt()),
+            tint = HopShopAppTheme.colors.white,
             modifier = Modifier.size(16.dp)
         )
 
         Spacer(modifier = Modifier.width(8.dp))
 
         Text(
-            text = "Dodaj listę",
+            text = stringResource(R.string.form_create_list_button),
             style = Typography.bodyMedium,
         )
     }

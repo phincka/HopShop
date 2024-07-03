@@ -7,7 +7,6 @@ import com.example.hopshop.data.model.ItemsCountModel
 import com.example.hopshop.data.model.ListModel
 import com.example.hopshop.domain.repository.ItemsRepository
 import com.example.hopshop.domain.repository.ListRepository
-import com.example.hopshop.presentation.createList.CreateListState
 import com.example.hopshop.presentation.list.CreateItemState
 import com.example.hopshop.presentation.list.RemoveItemState
 import com.example.hopshop.presentation.list.SetItemSelectedState
