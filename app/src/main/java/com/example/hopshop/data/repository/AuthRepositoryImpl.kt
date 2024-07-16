@@ -8,6 +8,7 @@ import com.example.hopshop.data.util.AccountUserState
 import com.example.hopshop.data.util.AuthState
 import com.example.hopshop.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.userProfileChangeRequest
 import kotlinx.coroutines.tasks.await
 import org.koin.core.annotation.Single
 
@@ -24,6 +25,7 @@ class AuthRepositoryImpl(
             AccountUserState.SignedInState(
                 UserModel(
                     userId = user.uid,
+                    name = user.displayName ?: "",
                     email = user.email ?: "",
                     isEmailVerified = user.isEmailVerified
                 )
@@ -49,6 +51,7 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun firebaseEmailSignUp(
+        name: String,
         email: String,
         password: String,
         repeatPassword: String
@@ -61,6 +64,12 @@ class AuthRepositoryImpl(
                 val currentUser = firebaseAuth.currentUser
                 if (currentUser != null) {
                     currentUser.sendEmailVerification().await()
+
+                    val profileUpdates = userProfileChangeRequest {
+                        displayName = name
+                    }
+
+                    currentUser.updateProfile(profileUpdates)
                     AuthState.Success(true)
                 } else {
                     AuthState.Error(context.getString(R.string.auth_state_no_user))

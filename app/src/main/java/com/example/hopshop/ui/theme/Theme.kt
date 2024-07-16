@@ -10,8 +10,6 @@ import androidx.compose.runtime.compositionLocalOf
 @Composable
 fun HopShopTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val hopShopColors = if (darkTheme) darkColors else lightColors
@@ -20,7 +18,7 @@ fun HopShopTheme(
         LocalAppColors provides hopShopColors,
     ) {
         MaterialTheme(
-            colorScheme = MaterialTheme.colorScheme.copy(background = hopShopColors.white),
+            colorScheme = MaterialTheme.colorScheme.copy(background = hopShopColors.white, primary = hopShopColors.purple),
             typography = Typography,
             content = content
         )

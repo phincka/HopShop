@@ -1,13 +1,13 @@
 package com.example.hopshop.data.util
 
 import com.example.hopshop.data.model.UserModel
-
 //data class SignInState(
 //    val isSignInSuccessful: Boolean = false,
 //    val signInError: String? = null
 //)
 
 sealed class AuthState {
+    data object None : AuthState()
     data object Loading: AuthState()
 
     data class Success(val success: Boolean , val message: String = ""): AuthState()

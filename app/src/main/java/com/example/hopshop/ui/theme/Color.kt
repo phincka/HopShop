@@ -21,7 +21,7 @@ val lightColors = HopShopColors(
 )
 
 val darkColors = HopShopColors(
-    purple = Color(0xFF7F56D9),
+    purple = Color(0XFFc156d9),
     purpleLight = Color(0xFFB692F6),
     purpleWhite = Color(0xFFF9F5FF),
     purple50 = Color(0XFFd6bbfb),

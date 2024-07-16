@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,6 +58,7 @@ fun TopBar(
     setModal: (Boolean) -> Unit = {},
     navigator: DestinationsNavigator,
     user: UserModel,
+    signOut: () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     var isDropdownMenuVisible by remember { mutableStateOf(false) }
@@ -98,20 +101,15 @@ fun TopBar(
                     modifier = Modifier.padding(start = 10.dp)
                 ) {
                     Text(
-                        text = user.email,
+                        text = user.name,
                         style = Typography.bodyMedium,
-                        color = HopShopAppTheme.colors.black,
+                        color = HopShopAppTheme.colors.black
                     )
-//                    Text(
-//                        text = "Jan Kowalski",
-//                        style = Typography.bodyMedium,
-//                        color = HopShopAppTheme.colors.black
-//                    )
-//                    Text(
-//                        text = user.email,
-//                        style = Typography.bodySmall,
-//                        color = HopShopAppTheme.colors.grey,
-//                    )
+                    Text(
+                        text = user.email,
+                        style = Typography.bodySmall,
+                        color = HopShopAppTheme.colors.grey,
+                    )
                 }
             }
         },
@@ -119,29 +117,29 @@ fun TopBar(
             Row(
                 horizontalArrangement = Arrangement.End,
             ) {
-                IconButton(
-                    onClick = { },
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                HopShopAppTheme.colors.purpleWhite,
-                                shape = CircleShape
-                            )
-                            .padding(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Notifications,
-                            contentDescription = "Localized description",
-                            tint = HopShopAppTheme.colors.purple,
-                        )
-                    }
-                }
+//                IconButton(
+//                    onClick = { },
+//                ) {
+//                    Box(
+//                        modifier = Modifier
+//                            .background(
+//                                HopShopAppTheme.colors.purpleWhite,
+//                                shape = CircleShape
+//                            )
+//                            .padding(8.dp)
+//                    ) {
+//                        Icon(
+//                            imageVector = Icons.Filled.Notifications,
+//                            contentDescription = "Localized description",
+//                            tint = HopShopAppTheme.colors.purple,
+//                        )
+//                    }
+//                }
+//
+//                Spacer(modifier = Modifier.width(16.dp))
 
-                Spacer(modifier = Modifier.width(16.dp))
-
                 IconButton(
-                    onClick = { navigator.navigate(AccountScreenDestination) },
+                    onClick = { signOut() },
                 ) {
 
                     Box(
@@ -153,7 +151,7 @@ fun TopBar(
                             .padding(8.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.Settings,
+                            imageVector = Icons.AutoMirrored.Filled.Logout,
                             contentDescription = "Localized description",
                             tint = HopShopAppTheme.colors.grey,
                         )

@@ -103,6 +103,7 @@ fun DashboardScreen(
                 setVisible = { isShareListDialogVisible = it },
                 createList = viewModel::createList,
                 createListState = createListState,
+                signOut = viewModel::signOut,
             )
             is AccountUserState.GuestState -> navigator.navigate(BaseAuthScreenDestination)
             is AccountUserState.Error -> TextError(accountUserState.message)
@@ -122,6 +123,7 @@ fun DashboardLayout(
     setVisible: (Boolean) -> Unit,
     createList: (String, String, String, String) -> Unit,
     createListState: CreateListState,
+    signOut: () -> Unit,
 ) {
     var titlesState by remember { mutableIntStateOf(0) }
     val titles = listOf(
@@ -149,7 +151,8 @@ fun DashboardLayout(
             TopBar(
                 title = stringResource(R.string.dashboard_topbar_title),
                 navigator = navigator,
-                user = user
+                user = user,
+                signOut = signOut,
             )
 
             Column(

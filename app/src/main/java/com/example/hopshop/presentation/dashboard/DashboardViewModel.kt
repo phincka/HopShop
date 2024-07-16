@@ -6,6 +6,7 @@ import com.example.hopshop.data.model.ItemsCountModel
 import com.example.hopshop.data.model.ListModel
 import com.example.hopshop.data.util.AccountUserState
 import com.example.hopshop.domain.usecase.auth.GetCurrentUserUseCase
+import com.example.hopshop.domain.usecase.auth.SignOutUseCase
 import com.example.hopshop.domain.usecase.list.CreateListUseCase
 import com.example.hopshop.domain.usecase.list.GetListsUseCase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,6 +21,7 @@ class DashboardViewModel(
     private val getListsUseCase: GetListsUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val createListUseCase: CreateListUseCase,
+    private val signOutUseCase: SignOutUseCase,
     private val firebaseFireStore: FirebaseFirestore,
 ) : ViewModel() {
     private val _accountUserState = MutableStateFlow<AccountUserState>(AccountUserState.None)
@@ -69,6 +71,11 @@ class DashboardViewModel(
             _createListState.value = CreateListState.Loading
             _createListState.value = createListUseCase(name, tag, sharedMail, description)
         }
+    }
+
+    fun signOut() = viewModelScope.launch {
+        _accountUserState.value = AccountUserState.Loading
+        _accountUserState.value = signOutUseCase()
     }
 }
 

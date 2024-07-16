@@ -251,7 +251,7 @@ fun ListLayout(
                         ) {
                             IconButton(
                                 onClick = {
-                                    navigator.popBackStack()
+                                    navigator.navigateUp()
                                 },
                             ) {
                                 Column(
