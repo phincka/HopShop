@@ -10,6 +10,7 @@ import com.example.hopshop.domain.usecase.item.CreateItemUseCase
 import com.example.hopshop.domain.usecase.item.GetItemsByListIdUseCase
 import com.example.hopshop.domain.usecase.item.RemoveItemUseCase
 import com.example.hopshop.domain.usecase.item.SetItemSelectedUseCase
+import com.example.hopshop.domain.usecase.list.ClearListItemsUseCase
 import com.example.hopshop.domain.usecase.list.GetListByIdUseCase
 import com.example.hopshop.domain.usecase.list.RemoveListUseCase
 import com.example.hopshop.domain.usecase.list.RemoveSharedListUseCase
@@ -25,7 +26,7 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class ListViewModel(
-    listId: String,
+    private val listId: String,
     private val getListByIdUseCase: GetListByIdUseCase,
     private val getItemsByListIdUseCase: GetItemsByListIdUseCase,
     private val createItemUseCase: CreateItemUseCase,
@@ -33,8 +34,9 @@ class ListViewModel(
     private val removeItemUseCase: RemoveItemUseCase,
     private val firebaseFireStore: FirebaseFirestore,
     private val removeListUseCase: RemoveListUseCase,
+    private val clearListItemsUseCase: ClearListItemsUseCase,
     private val shareListUseCase: ShareListUseCase,
-    private val removeSharedListUseCase: RemoveSharedListUseCase
+    private val removeSharedListUseCase: RemoveSharedListUseCase,
     ) : ViewModel() {
     private val _listState: MutableStateFlow<ListState> = MutableStateFlow(ListState.Loading)
     val listState: StateFlow<ListState> = _listState
@@ -56,6 +58,9 @@ class ListViewModel(
 
     private val _removeListState: MutableStateFlow<RemoveListState> = MutableStateFlow(RemoveListState.None)
     val removeListState: StateFlow<RemoveListState> = _removeListState
+
+    private val _clearListItemsState: MutableStateFlow<ClearListItemsState> = MutableStateFlow(ClearListItemsState.None)
+    val clearListItemsState: StateFlow<ClearListItemsState> = _clearListItemsState
 
     private val _shareListState: MutableStateFlow<ShareListState> = MutableStateFlow(ShareListState.None)
     val shareListState: StateFlow<ShareListState> = _shareListState
@@ -186,43 +191,16 @@ class ListViewModel(
         }
     }
 
-    fun shareList(
-        listId: String,
-        email: String,
-    ) {
-        _shareListState.value = ShareListState.Loading
-
+    fun clearListItems() {
         viewModelScope.launch {
             try {
-                _shareListState.value = shareListUseCase(
-                    listId = listId,
-                    email = email
-                )
+                _clearListItemsState.value = clearListItemsUseCase(listId = listId)
+                _clearListItemsState.value = ClearListItemsState.Success
             } catch (e: Exception) {
-                _shareListState.value = ShareListState.Error("${e.message}")
+                _clearListItemsState.value = ClearListItemsState.Error("${e.message}")
             }
         }
     }
-
-    fun removeSharedList(
-        listId: String,
-        email: String,
-    ) {
-        _removeSharedListState.value = RemoveSharedListState.Loading
-
-        viewModelScope.launch {
-            try {
-                _removeSharedListState.value = removeSharedListUseCase(
-                    listId = listId,
-                    email = email
-                )
-            } catch (e: Exception) {
-                _removeSharedListState.value = RemoveSharedListState.Error("${e.message}")
-            }
-        }
-    }
-
-
 }
 
 sealed class ListState {
@@ -265,4 +243,10 @@ sealed class RemoveListState {
     data object None : RemoveListState()
     data object Success : RemoveListState()
     data class Error(val message: String) : RemoveListState()
+}
+
+sealed class ClearListItemsState {
+    data object None : ClearListItemsState()
+    data object Success : ClearListItemsState()
+    data class Error(val message: String) : ClearListItemsState()
 }

@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hopshop.R
+import com.example.hopshop.components.infoContainer.InfoContainer
 import com.example.hopshop.data.model.ListModel
 import com.example.hopshop.data.model.UserModel
 import com.example.hopshop.data.util.AccountUserState
@@ -220,38 +221,11 @@ fun DashboardLayout(
 
                         is ListsState.Error -> Unit
                     }
-                    // TODO Migrate to custom component
-                    1 -> Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .padding(top = 105.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.Label,
-                            contentDescription = "Localized description",
-                            tint = AppTheme.colors.purple,
-                            modifier = Modifier.size(56.dp)
-                        )
 
-                        Text(
-                            text = stringResource(R.string.in_progress_title),
-                            style = Typography.h5,
-                            fontWeight = FontWeight.SemiBold,
-                            color = AppTheme.colors.black90,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.width(264.dp)
-                        )
-
-                        Text(
-                            text = stringResource(R.string.in_progress_text),
-                            style = Typography.label,
-                            color = AppTheme.colors.grey,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.width(264.dp)
-                        )
-                    }
+                    1 -> InfoContainer(
+                        title = stringResource(R.string.in_progress_title),
+                        text = stringResource(R.string.in_progress_text),
+                    )
                 }
             }
         }
