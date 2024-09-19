@@ -32,8 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.example.hopshop.data.model.ListModel
 import com.example.hopshop.presentation.destinations.ListScreenDestination
-import com.example.hopshop.ui.theme.HopShopAppTheme
-import com.example.hopshop.ui.theme.HopShopColors
+import com.example.hopshop.ui.theme.AppTheme
 import com.example.hopshop.ui.theme.Typography
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -44,9 +43,9 @@ fun GroceryListItem(
 ) {
     OutlinedCard(
         colors = CardDefaults.cardColors(
-            containerColor = HopShopAppTheme.colors.grey20,
+            containerColor = AppTheme.colors.grey20,
         ),
-        border = BorderStroke(1.dp, HopShopAppTheme.colors.grey50),
+        border = BorderStroke(1.dp, AppTheme.colors.grey50),
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
@@ -67,12 +66,9 @@ fun GroceryListItem(
             ) {
                 Text(
                     text = list.name,
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        lineHeight = 28.sp,
-                    ),
-                    color = HopShopAppTheme.colors.black,
+                    style = Typography.p,
+                    fontWeight = FontWeight.SemiBold,
+                    color = AppTheme.colors.black,
                     textAlign = TextAlign.Center,
                 )
 
@@ -83,7 +79,7 @@ fun GroceryListItem(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Label,
                             contentDescription = "Localized description",
-                            tint = HopShopAppTheme.colors.grey,
+                            tint = AppTheme.colors.grey,
                             modifier = Modifier
                                 .size(16.dp)
                                 .rotate(-45f)
@@ -93,9 +89,9 @@ fun GroceryListItem(
 
                         Text(
                             text = list.tag,
-                            style = Typography.bodyMedium,
+                            style = Typography.small,
                             fontWeight = FontWeight.Medium,
-                            color = HopShopAppTheme.colors.grey,
+                            color = AppTheme.colors.grey,
                         )
                     }
                 }
@@ -118,9 +114,9 @@ fun GroceryListItem(
 
                     Text(
                         text = "Lista użytkownika Paweł",
-                        style = Typography.bodyMedium,
+                        style = Typography.small,
                         fontWeight = FontWeight.Medium,
-                        color = HopShopAppTheme.colors.grey,
+                        color = AppTheme.colors.grey,
                     )
                 }
             }

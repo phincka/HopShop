@@ -11,17 +11,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.navigation.compose.rememberNavController
-import com.example.hopshop.presentation.main.BottomNavigationBar
-import com.example.hopshop.ui.theme.HopShopTheme
 import com.example.hopshop.presentation.NavGraphs
+import com.example.hopshop.ui.theme.AppTheme
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
@@ -41,11 +37,9 @@ class MainActivity : ComponentActivity() {
             val scope = rememberCoroutineScope()
             val snackbarState = SnackbarHandler(scope)
 
-            HopShopTheme {
-
+            AppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
                 ) {
                     Box(
                         modifier = Modifier

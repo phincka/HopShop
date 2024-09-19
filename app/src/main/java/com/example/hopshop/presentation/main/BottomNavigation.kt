@@ -68,7 +68,6 @@ enum class BottomNavigationItems(
 }
 
 enum class VisibleBottomBarDestination(val route: String) {
-//    Dashboard(DashboardScreenDestination.route),
     Account(AccountScreenDestination.route);
 
     companion object {
@@ -125,7 +124,6 @@ fun BottomNavigationBar(
 
                             NavigationBarItem(
                                 icon = { Icon(item.icon, contentDescription = item.label) },
-//                                label = { Text(item.label) },
                                 selected = isSelected,
                                 onClick = {
                                     if (isSelected) {
@@ -191,17 +189,4 @@ fun Modifier.bottomBarPadding(navController: NavController): Modifier {
     } else {
         this
     }
-}
-
-@Composable
-fun getSystemBottomBarHeight(): Dp {
-    val view = LocalView.current
-    val density = LocalDensity.current
-
-    // Get WindowInsets for the current view
-    val insets = ViewCompat.getRootWindowInsets(view)
-    val bottomBarHeightPx = insets?.getInsets(WindowInsetsCompat.Type.systemBars())?.bottom ?: 0
-
-    // Convert the pixel value to dp
-    return with(density) { bottomBarHeightPx.toDp() }
 }

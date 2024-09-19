@@ -14,8 +14,8 @@ import org.koin.android.annotation.KoinViewModel
 class SignUpViewModel(
     private val signUpUseCase: SignUpUseCase,
 ) : ViewModel() {
-    private val _state: MutableStateFlow<AuthState> = MutableStateFlow(AuthState.None)
-    val signInState: StateFlow<AuthState> = _state
+    private val _signUpState: MutableStateFlow<AuthState> = MutableStateFlow(AuthState.None)
+    val signUpState: StateFlow<AuthState> = _signUpState
 
     fun signUp(
         name: String,
@@ -24,8 +24,8 @@ class SignUpViewModel(
         repeatPassword: String,
     ) {
         viewModelScope.launch {
-            _state.value = AuthState.Loading
-            _state.value = signUpUseCase(name, email, password, repeatPassword)
+            _signUpState.value = AuthState.Loading
+            _signUpState.value = signUpUseCase(name, email, password, repeatPassword)
         }
     }
 }

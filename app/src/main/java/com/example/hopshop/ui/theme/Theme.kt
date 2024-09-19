@@ -1,6 +1,5 @@
 package com.example.hopshop.ui.theme
 
-import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -8,29 +7,31 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 
 @Composable
-fun HopShopTheme(
+fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    content: @Composable() () -> Unit
 ) {
-    val hopShopColors = if (darkTheme) darkColors else lightColors
+    val appColors = if (darkTheme) darkColors else lightColors
 
     CompositionLocalProvider(
-        LocalAppColors provides hopShopColors,
+        LocalAppColors provides appColors,
     ) {
         MaterialTheme(
-            colorScheme = MaterialTheme.colorScheme.copy(background = hopShopColors.white, primary = hopShopColors.purple),
-            typography = Typography,
-            content = content
+            colorScheme = MaterialTheme.colorScheme.copy(
+                background = appColors.white,
+                primary = appColors.purple
+            ),
+            content = content,
         )
     }
 }
 
-object HopShopAppTheme {
-    val colors: HopShopColors
+object AppTheme {
+    val colors: AppColors
         @Composable
         get() = LocalAppColors.current
 }
 
-private val LocalAppColors = compositionLocalOf<HopShopColors> {
+private val LocalAppColors = compositionLocalOf<AppColors> {
     error("No Colors provided")
 }

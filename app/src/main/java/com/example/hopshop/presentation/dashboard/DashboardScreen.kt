@@ -6,8 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,7 +21,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -52,7 +49,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
 import androidx.navigation.NavController
 import com.example.hopshop.R
 import com.example.hopshop.data.model.ListModel
@@ -62,11 +58,12 @@ import com.example.hopshop.presentation.components.BottomSheet
 import com.example.hopshop.presentation.components.GroceryListItem
 import com.example.hopshop.presentation.components.LoadingDialog
 import com.example.hopshop.presentation.components.TextError
-import com.example.hopshop.presentation.components.TopBar
+import com.example.hopshop.components.topBar.TopBar
+import com.example.hopshop.presentation.auth.signIn.Button
 import com.example.hopshop.presentation.destinations.BaseAuthScreenDestination
 import com.example.hopshop.presentation.list.VerticalSpacer
 import com.example.hopshop.presentation.main.bottomBarPadding
-import com.example.hopshop.ui.theme.HopShopAppTheme
+import com.example.hopshop.ui.theme.AppTheme
 import com.example.hopshop.ui.theme.Typography
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -89,12 +86,11 @@ fun DashboardScreen(
 
     Box(
         modifier = Modifier
-            .bottomBarPadding(navController = navController)
             .fillMaxSize()
-            .background(Color.Red)
+            .bottomBarPadding(navController = navController)
     ) {
         when (val accountUserState = viewModel.accountUserState.collectAsState().value) {
-            is AccountUserState.Loading -> LoadingDialog(stringResource(R.string.loading))
+            is AccountUserState.Loading -> LoadingDialog()
             is AccountUserState.SignedInState -> DashboardLayout(
                 navigator = navigator,
                 listsState = listsState,
@@ -105,6 +101,7 @@ fun DashboardScreen(
                 createListState = createListState,
                 signOut = viewModel::signOut,
             )
+
             is AccountUserState.GuestState -> navigator.navigate(BaseAuthScreenDestination)
             is AccountUserState.Error -> TextError(accountUserState.message)
             is AccountUserState.None -> Unit
@@ -149,8 +146,6 @@ fun DashboardLayout(
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
             TopBar(
-                title = stringResource(R.string.dashboard_topbar_title),
-                navigator = navigator,
                 user = user,
                 signOut = signOut,
             )
@@ -181,9 +176,9 @@ fun DashboardLayout(
                                     text = title,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
-                                    style = Typography.bodyMedium,
+                                    style = Typography.small,
                                     fontWeight = FontWeight.Medium,
-                                    color = HopShopAppTheme.colors.black,
+                                    color = AppTheme.colors.black,
                                 )
                             },
                             modifier = if (titlesState == index) {
@@ -191,13 +186,13 @@ fun DashboardLayout(
                                     .height(40.dp)
                                     .clip(roundedCornerShape)
                                     .background(Color.White)
-                                    .border(1.dp, HopShopAppTheme.colors.grey50, roundedCornerShape)
+                                    .border(1.dp, AppTheme.colors.grey50, roundedCornerShape)
                             } else {
                                 Modifier
                                     .height(40.dp)
                                     .clip(roundedCornerShape)
-                                    .background(HopShopAppTheme.colors.grey10)
-                                    .border(1.dp, HopShopAppTheme.colors.grey50, roundedCornerShape)
+                                    .background(AppTheme.colors.grey10)
+                                    .border(1.dp, AppTheme.colors.grey50, roundedCornerShape)
                             }
                         )
                     }
@@ -207,14 +202,13 @@ fun DashboardLayout(
                     0 -> when (listsState) {
                         is ListsState.None -> Unit
 
-                        is ListsState.Loading -> LoadingDialog(stringResource(R.string.loading))
+                        is ListsState.Loading -> LoadingDialog()
 
                         is ListsState.Success -> {
                             LazyColumn(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-
                                 items(items = listsState.lists) { list ->
                                     GroceryListItem(
                                         navigator = navigator,
@@ -237,23 +231,23 @@ fun DashboardLayout(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Label,
                             contentDescription = "Localized description",
-                            tint = HopShopAppTheme.colors.purple,
+                            tint = AppTheme.colors.purple,
                             modifier = Modifier.size(56.dp)
                         )
 
                         Text(
                             text = stringResource(R.string.in_progress_title),
-                            style = Typography.headlineSmall,
+                            style = Typography.h5,
                             fontWeight = FontWeight.SemiBold,
-                            color = HopShopAppTheme.colors.black90,
+                            color = AppTheme.colors.black90,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.width(264.dp)
                         )
 
                         Text(
                             text = stringResource(R.string.in_progress_text),
-                            style = Typography.bodyMedium,
-                            color = HopShopAppTheme.colors.grey,
+                            style = Typography.label,
+                            color = AppTheme.colors.grey,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.width(264.dp)
                         )
@@ -289,15 +283,13 @@ fun CreateListBottomSheet(
     var sharedMail by remember { mutableStateOf("") }
     var description by remember { mutableStateOf(list?.description ?: "") }
 
-    if (createListState is CreateListState.Loading) LoadingDialog(
-        stringResource(R.string.loading)
-    )
+    if (createListState is CreateListState.Loading) LoadingDialog()
 
     Text(
         text = stringResource(R.string.create_list),
-        style = Typography.headlineSmall,
+        style = Typography.h5,
         fontWeight = FontWeight.Bold,
-        color = HopShopAppTheme.colors.black,
+        color = AppTheme.colors.black,
     )
 
     VerticalSpacer(16.dp)
@@ -311,13 +303,13 @@ fun CreateListBottomSheet(
         },
         shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = HopShopAppTheme.colors.purple,
-            unfocusedBorderColor = HopShopAppTheme.colors.gray30,
+            focusedBorderColor = AppTheme.colors.purple,
+            unfocusedBorderColor = AppTheme.colors.gray30,
         ),
         textStyle = TextStyle.Default.copy(
             fontSize = 16.sp,
             lineHeight = 24.sp,
-            color = HopShopAppTheme.colors.grey,
+            color = AppTheme.colors.grey,
         ),
         maxLines = 1,
         keyboardActions = KeyboardActions(
@@ -337,13 +329,13 @@ fun CreateListBottomSheet(
         },
         shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = HopShopAppTheme.colors.purple,
-            unfocusedBorderColor = HopShopAppTheme.colors.gray30,
+            focusedBorderColor = AppTheme.colors.purple,
+            unfocusedBorderColor = AppTheme.colors.gray30,
         ),
         textStyle = TextStyle.Default.copy(
             fontSize = 16.sp,
             lineHeight = 24.sp,
-            color = HopShopAppTheme.colors.grey,
+            color = AppTheme.colors.grey,
         ),
         maxLines = 1,
         keyboardActions = KeyboardActions(
@@ -365,13 +357,13 @@ fun CreateListBottomSheet(
             placeholder = { Text(stringResource(R.string.form_email_label)) },
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = HopShopAppTheme.colors.purple,
-                unfocusedBorderColor = HopShopAppTheme.colors.gray30,
+                focusedBorderColor = AppTheme.colors.purple,
+                unfocusedBorderColor = AppTheme.colors.gray30,
             ),
             textStyle = TextStyle.Default.copy(
                 fontSize = 16.sp,
                 lineHeight = 24.sp,
-                color = HopShopAppTheme.colors.grey,
+                color = AppTheme.colors.grey,
             ),
             maxLines = 1,
             keyboardActions = KeyboardActions(
@@ -392,13 +384,13 @@ fun CreateListBottomSheet(
         },
         shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = HopShopAppTheme.colors.purple,
-            unfocusedBorderColor = HopShopAppTheme.colors.gray30,
+            focusedBorderColor = AppTheme.colors.purple,
+            unfocusedBorderColor = AppTheme.colors.gray30,
         ),
         textStyle = TextStyle.Default.copy(
             fontSize = 16.sp,
             lineHeight = 24.sp,
-            color = HopShopAppTheme.colors.grey,
+            color = AppTheme.colors.grey,
         ),
         minLines = 3,
         keyboardActions = KeyboardActions(
@@ -409,10 +401,10 @@ fun CreateListBottomSheet(
         )
     )
 
+    VerticalSpacer(24.dp)
+
     Button(
-        modifier = Modifier
-            .padding(top = 16.dp)
-            .fillMaxWidth(),
+        text = stringResource(R.string.form_create_list_button),
         onClick = {
             createList(
                 listName,
@@ -422,21 +414,5 @@ fun CreateListBottomSheet(
             )
             setVisible(false)
         },
-        contentPadding = PaddingValues(16.dp),
-        shape = RoundedCornerShape(8.dp),
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Add,
-            contentDescription = "Localized description",
-            tint = HopShopAppTheme.colors.white,
-            modifier = Modifier.size(16.dp)
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Text(
-            text = stringResource(R.string.form_create_list_button),
-            style = Typography.bodyMedium,
-        )
-    }
+    )
 }

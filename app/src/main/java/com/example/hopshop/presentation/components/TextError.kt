@@ -15,7 +15,7 @@ fun TextError(
     Text(
         text = text,
         color = Color.Red,
-        style = Typography.labelMedium,
+        style = Typography.label,
         modifier = Modifier.padding(top = 16.dp),
     )
 }

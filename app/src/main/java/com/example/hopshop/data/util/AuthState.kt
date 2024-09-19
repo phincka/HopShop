@@ -12,7 +12,7 @@ sealed class AuthState {
 
     data class Success(val success: Boolean , val message: String = ""): AuthState()
 
-    data class Error(val error: String): AuthState()
+    data class Error(val message: String): AuthState()
 }
 
 sealed class AccountUserState {

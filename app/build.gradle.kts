@@ -30,6 +30,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            firebaseAppDistribution {
+                releaseNotesFile="releasenotes.txt"
+                testers="pawel2hincka@gmail.com"
+            }
         }
     }
     compileOptions {
@@ -67,11 +72,11 @@ dependencies {
     implementation("io.insert-koin:koin-androidx-compose-navigation:3.5.3")
     implementation("io.insert-koin:koin-annotations:1.3.1")
     ksp("io.insert-koin:koin-ksp-compiler:1.3.1")
-
     // Firebase
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.accompanist:accompanist-insets:0.23.0")
 
     // Icons
     implementation("androidx.compose.material:material-icons-extended:1.6.4")

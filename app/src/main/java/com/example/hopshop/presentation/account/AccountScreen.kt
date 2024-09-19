@@ -1,7 +1,6 @@
 package com.example.hopshop.presentation.account
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,16 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.hopshop.R
 import com.example.hopshop.data.util.AccountUserState
 import com.example.hopshop.presentation.components.FilledButton
 import com.example.hopshop.presentation.components.LoadingDialog
 import com.example.hopshop.presentation.components.TextError
-import com.example.hopshop.presentation.components.TopBar
 import com.example.hopshop.presentation.destinations.BaseAuthScreenDestination
 import com.example.hopshop.presentation.main.bottomBarPadding
 import com.ramcosta.composedestinations.annotation.Destination
@@ -58,7 +53,6 @@ fun AccountLayout(
     Box(
         modifier = Modifier
             .bottomBarPadding(navController = navController)
-            .background(Color.White)
             .fillMaxSize()
     ) {
         Column {
@@ -72,7 +66,7 @@ fun AccountLayout(
                 modifier = Modifier.padding(12.dp)
             ) {
                 when (accountUserState) {
-                    is AccountUserState.Loading -> LoadingDialog(stringResource(R.string.loading))
+                    is AccountUserState.Loading -> LoadingDialog()
 
                     is AccountUserState.SignedInState -> {
                         FilledButton(
