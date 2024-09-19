@@ -6,7 +6,6 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +29,6 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FolderShared
 import androidx.compose.material.icons.filled.MoreVert
@@ -75,13 +73,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hopshop.R
+import com.example.hopshop.components.infoContainer.InfoContainer
 import com.example.hopshop.data.model.ItemModel
+import com.example.hopshop.data.model.ItemsCountModel
 import com.example.hopshop.data.model.ListModel
 import com.example.hopshop.data.util.DropdownMenuItemData
 import com.example.hopshop.presentation.auth.signIn.Button
@@ -117,14 +116,21 @@ fun ListScreen(
     val removeListState = viewModel.removeListState.collectAsState().value
     val createItemState = viewModel.createItemState.collectAsState().value
     val shareListState = viewModel.shareListState.collectAsState().value
+    val clearListItemsState = viewModel.clearListItemsState.collectAsState().value
 
     if (removeListState is RemoveListState.Success) navigator.navigate(DashboardScreenDestination)
 
-    LaunchedEffect(shareListState) {
+    LaunchedEffect(shareListState, clearListItemsState) {
         launch {
             if (shareListState is ShareListState.Error) snackbarHandler.showErrorSnackbar(message = shareListState.message)
+            if (clearListItemsState is ClearListItemsState.Error) snackbarHandler.showErrorSnackbar(message = clearListItemsState.message)
+
             if (shareListState is ShareListState.Success) snackbarHandler.showSuccessSnackbar(
                 message = "Pomyślnie udostępniono listę"
+            )
+
+            if (clearListItemsState is ClearListItemsState.Success) snackbarHandler.showSuccessSnackbar(
+                message = "Pomyślnie wyczyszczono listę"
             )
         }
     }
@@ -143,15 +149,13 @@ fun ListScreen(
                     navigator = navigator,
                     list = listState.list,
                     itemsState = itemsState,
-                    itemsCount = itemsCountState,
+                    itemsCountState = itemsCountState,
                     setItemSelected = viewModel::setItemSelected,
                     removeItem = viewModel::removeItem,
                     removeList = viewModel::removeList,
-                    shareList = viewModel::shareList,
-                    removeSharedList = viewModel::removeSharedList,
                     createItemState = createItemState,
-                    shareListState = shareListState,
                     createItem = viewModel::createItem,
+                    clearListItems = viewModel::clearListItems,
                 )
             }
         }
@@ -168,20 +172,21 @@ fun ListLayout(
     navigator: DestinationsNavigator,
     list: ListModel,
     itemsState: ItemsState,
-    itemsCount: ItemsCountState,
+    itemsCountState: ItemsCountState,
     setItemSelected: (String, Boolean) -> Unit,
     removeItem: (String) -> Unit,
     removeList: (String) -> Unit,
-    shareList: (String, String) -> Unit,
-    removeSharedList: (String, String) -> Unit,
     createItemState: CreateItemState,
-    shareListState: ShareListState,
     createItem: (String, String) -> Unit,
+    clearListItems: () -> Unit,
 ) {
     var isCreateItemDialogVisible by remember { mutableStateOf(false) }
     var isDropdownMenuVisible by remember { mutableStateOf(false) }
     var isModalActive by remember { mutableStateOf(false) }
     var isShareListDialogVisible by remember { mutableStateOf(false) }
+
+    var isShoppingCompleteModalActive by remember { mutableStateOf(true) }
+
 
     val menuItems = listOf(
         DropdownMenuItemData(
@@ -201,7 +206,7 @@ fun ListLayout(
         ),
         DropdownMenuItemData(
             icon = Icons.Outlined.Clear,
-            text = stringResource(R.string.loading), //usuń,
+            text = stringResource(R.string.loading),
             onClick = {
                 isModalActive = true
             }
@@ -308,56 +313,36 @@ fun ListLayout(
                     }
                 )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                itemsCountState.takeIfSuccess()?.itemsCount?.let { itemsCountModel ->
+                    ItemsCount(
+                        itemsCountModel = itemsCountModel,
+                        isShoppingCompleteModalActive = isShoppingCompleteModalActive,
+                        setShoppingCompleteModalActive = { isShoppingCompleteModalActive = it },
+                        clearListItems = clearListItems,
+                    )
+                }
 
-                    if (itemsCount is ItemsCountState.Success) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.List,
-                                contentDescription = "Localized description",
-                                tint = AppTheme.colors.grey,
-                                modifier = Modifier.size(16.dp)
-                            )
+                if (list.tag.isNotEmpty()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Label,
+                            contentDescription = "Localized description",
+                            tint = AppTheme.colors.grey,
+                            modifier = Modifier
+                                .size(16.dp)
+                                .rotate(-45f)
+                        )
 
-                            Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
 
-                            Text(
-                                text = "${stringResource(R.string.selected_items)} ${itemsCount.itemsCount.selected} z ${itemsCount.itemsCount.items}",
-                                style = Typography.small,
-                                fontWeight = FontWeight.Medium,
-                                color = AppTheme.colors.grey,
-                            )
-                        }
-                    }
-
-                    if (list.tag.isNotEmpty()) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Label,
-                                contentDescription = "Localized description",
-                                tint = AppTheme.colors.grey,
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .rotate(-45f)
-                            )
-
-                            Spacer(modifier = Modifier.width(4.dp))
-
-                            Text(
-                                text = list.tag,
-                                style = Typography.small,
-                                fontWeight = FontWeight.Medium,
-                                color = AppTheme.colors.grey,
-                            )
-                        }
+                        Text(
+                            text = list.tag,
+                            style = Typography.small,
+                            fontWeight = FontWeight.Medium,
+                            color = AppTheme.colors.grey,
+                        )
                     }
                 }
             }
@@ -405,38 +390,10 @@ fun ListLayout(
                             setItemSelected = setItemSelected,
                         )
                     } else {
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .padding(top = 105.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Label,
-                                contentDescription = "Localized description",
-                                tint = AppTheme.colors.purple,
-                                modifier = Modifier.size(56.dp)
-                            )
-
-                            Text(
-                                text = stringResource(R.string.empty_list_title),
-                                style = Typography.h5,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppTheme.colors.black90,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.width(264.dp)
-                            )
-
-                            Text(
-                                text = stringResource(R.string.empty_list_text),
-                                style = Typography.label,
-                                color = AppTheme.colors.grey,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.width(264.dp)
-                            )
-
-                        }
+                        InfoContainer(
+                            title = stringResource(R.string.empty_list_title),
+                            text = stringResource(R.string.empty_list_text),
+                        )
                     }
                 }
             }
@@ -713,3 +670,55 @@ fun Dropdown(
         }
     }
 }
+
+@Composable
+fun ItemsCount(
+    itemsCountModel: ItemsCountModel,
+    isShoppingCompleteModalActive: Boolean,
+    setShoppingCompleteModalActive: (Boolean) -> Unit,
+    clearListItems: () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.List,
+                contentDescription = "Localized description",
+                tint = AppTheme.colors.grey,
+                modifier = Modifier.size(16.dp)
+            )
+
+            Spacer(modifier = Modifier.width(4.dp))
+
+            Text(
+                text = "${stringResource(R.string.selected_items)} ${itemsCountModel.selected} z ${itemsCountModel.items}",
+                style = Typography.small,
+                fontWeight = FontWeight.Medium,
+                color = AppTheme.colors.grey,
+            )
+        }
+
+        if (itemsCountModel.items == itemsCountModel.selected) {
+            Modal(
+                dialogTitle = "Kupiłeś już wszystko z tej listy.",
+                dialogText = "Kupiłeś już wszystko z tej listy. Czy chcesz opróżnić listę zakupów?",
+                icon = Icons.Filled.Warning,
+                isModalActive = isShoppingCompleteModalActive,
+                onDismissRequest = {
+                    setShoppingCompleteModalActive(false)
+               },
+                onConfirmation = {
+                    clearListItems()
+                    setShoppingCompleteModalActive(false)
+                },
+            )
+        }
+    }
+}
+
+private fun ItemsCountState.takeIfSuccess() = (this as? ItemsCountState.Success)
