@@ -51,7 +51,7 @@ fun TopBar(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(AppTheme.colors.purpleWhite)
+                        .background(AppTheme.colors.purple50)
                 ) {
                     Text(
                         text = user.email.first().toString().uppercase(),

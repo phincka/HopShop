@@ -42,6 +42,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import androidx.navigation.NavController.OnDestinationChangedListener
+import com.example.hopshop.ui.theme.AppTheme
 
 @Composable
 fun Snackbar(
@@ -55,7 +56,7 @@ fun Snackbar(
     var isSuccessSnackbar by remember { mutableStateOf(false) }
     val snackbarPadding = if (isNavBarVisible) BOTTOM_BAR_HEIGHT else 0.dp
     val currentSnackbarData = snackbarHostState.currentSnackbarData
-    val snackbarColor = if (isSuccessSnackbar) Color.Green else Color.Red
+    val snackbarColor = if (isSuccessSnackbar) AppTheme.colors.green else AppTheme.colors.purple50
     val destinationChangedListener = OnDestinationChangedListener { _, _, _ ->
         snackbarHostState.currentSnackbarData?.dismiss()
         isVisible = false

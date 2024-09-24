@@ -2,6 +2,7 @@ package com.example.hopshop.presentation.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.hopshop.data.model.FormListModel
 import com.example.hopshop.data.model.ItemsCountModel
 import com.example.hopshop.data.model.ListModel
 import com.example.hopshop.data.util.AccountUserState
@@ -22,7 +23,7 @@ class DashboardViewModel(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val createListUseCase: CreateListUseCase,
     private val signOutUseCase: SignOutUseCase,
-    private val firebaseFireStore: FirebaseFirestore,
+    firebaseFireStore: FirebaseFirestore,
 ) : ViewModel() {
     private val _accountUserState = MutableStateFlow<AccountUserState>(AccountUserState.None)
     val accountUserState = _accountUserState.asStateFlow()
@@ -38,7 +39,7 @@ class DashboardViewModel(
         getLists()
 
         firebaseFireStore.collection("lists")
-            .addSnapshotListener { snapshots, e ->
+            .addSnapshotListener { _, e ->
                 if (e != null) return@addSnapshotListener
                 getLists()
             }
@@ -61,15 +62,10 @@ class DashboardViewModel(
         _accountUserState.value = getCurrentUserUseCase()
     }
 
-    fun createList(
-        name: String,
-        tag: String,
-        sharedMail: String,
-        description: String
-    ) {
+    fun createList(formListModel: FormListModel) {
         viewModelScope.launch {
             _createListState.value = CreateListState.Loading
-            _createListState.value = createListUseCase(name, tag, sharedMail, description)
+            _createListState.value = createListUseCase(formListModel)
         }
     }
 

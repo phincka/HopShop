@@ -84,6 +84,13 @@
     <string name="remove_modal_cancel">Anuluj</string>
     <!-- Remove modal end -->
 
+    <!-- clear list modal start -->
+    <string name="clear_list_modal_title">Kupiłeś już wszystko!</string>
+    <string name="clear_list_modal_text">Kupiłeś już wszystko z tej listy. Czy chcesz opróżnić listę zakupów?</string>
+    <string name="clear_list_modal_remove">Wyczyść</string>
+    <string name="clear_list_modal_cancel">Anuluj</string>
+    <!-- clear list modal end -->
+
     <!-- Remove modal start -->
     <string name="home_screen">Home</string>
     <string name="hive_screen">Hive</string>
@@ -101,8 +108,9 @@
     <string name="share_success">Pomyślnie udostępniono listę</string>
     <string name="edit_list">Edytuj listę</string>
     <string name="selected_items">Kupiono</string>
+    <string name="item_name">Co chcesz kupić?</string>
 
-    <string name="remove_modal_title">Usuń!</string>
+    <string name="remove_modal_title">Usuń listę!</string>
     <string name="remove_modal_text">Usuń?</string>
 
     <string name="empty_list_title">Lista jest pusta</string>

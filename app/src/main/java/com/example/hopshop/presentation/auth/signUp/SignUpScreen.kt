@@ -20,21 +20,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.hopshop.R
+import com.example.hopshop.components.buttons.Button
+import com.example.hopshop.components.design.VerticalSpacer
+import com.example.hopshop.components.form.InputText
 import com.example.hopshop.data.util.AuthState
 import com.example.hopshop.presentation.auth.signIn.BackgroundShapes
-import com.example.hopshop.presentation.auth.signIn.Button
-import com.example.hopshop.presentation.auth.signIn.InputText
 import com.example.hopshop.presentation.components.LoadingDialog
 import com.example.hopshop.presentation.components.PasswordField
-import com.example.hopshop.presentation.components.TextError
 import com.example.hopshop.presentation.destinations.DashboardScreenDestination
 import com.example.hopshop.presentation.destinations.SignInScreenDestination
-import com.example.hopshop.presentation.destinations.SignUpScreenDestination
-import com.example.hopshop.presentation.list.VerticalSpacer
 import com.example.hopshop.presentation.main.SnackbarHandler
 import com.example.hopshop.presentation.main.bottomBarPadding
 import com.example.hopshop.ui.theme.AppTheme
@@ -60,7 +57,7 @@ fun SignUpScreen(
     var repeatPassword by remember { mutableStateOf("") }
 
     if (signUpState is AuthState.Loading) LoadingDialog()
-    if (signUpState is AuthState.Success) navigator.navigate(DashboardScreenDestination)
+    if (signUpState is AuthState.Success) navigator.navigate(DashboardScreenDestination())
 
     LaunchedEffect(signUpState) {
         launch {

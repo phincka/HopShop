@@ -1,5 +1,6 @@
 package com.example.hopshop.domain.repository
 
+import com.example.hopshop.data.model.FormListModel
 import com.example.hopshop.data.model.ItemsCountModel
 import com.example.hopshop.data.model.ListModel
 import com.example.hopshop.presentation.dashboard.CreateListState
@@ -17,12 +18,7 @@ interface ListRepository {
 
     suspend fun getListItemsCount(listId: String): ItemsCountModel
 
-    suspend fun createList(
-        name: String,
-        tag: String,
-        sharedMail: String,
-        description: String
-    ): CreateListState
+    suspend fun createList(formListModel: FormListModel): CreateListState
 
     suspend fun editList(
         listId: String,

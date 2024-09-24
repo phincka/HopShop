@@ -1,6 +1,7 @@
 package com.example.hopshop.data.repository
 
 import android.util.Log
+import com.example.hopshop.data.model.FormListModel
 import com.example.hopshop.data.model.ItemsCountModel
 import com.example.hopshop.data.model.ListModel
 import com.example.hopshop.domain.repository.ListRepository
@@ -150,12 +151,7 @@ class ListRepositoryImpl(
             } ?: continuation.resume(itemsCount)
         }
 
-    override suspend fun createList(
-        name: String,
-        tag: String,
-        sharedMail: String,
-        description: String
-    ): CreateListState =
+    override suspend fun createList(formListModel: FormListModel): CreateListState =
         suspendCancellableCoroutine { continuation ->
             if (firebaseAuth.currentUser != null) {
                 firebaseAuth.currentUser?.let { currentUser ->
@@ -166,12 +162,12 @@ class ListRepositoryImpl(
 
                     val list = ListModel(
                         id = id,
-                        name = name,
+                        name = formListModel.name,
                         ownerId = currentUser.uid,
-                        description = description,
-                        tag = tag,
-                        sharedIds = listOf(sharedMail),
-                        isShared = sharedMail.isNotEmpty(),
+                        description = formListModel.description,
+                        tag = formListModel.tag,
+                        sharedIds = formListModel.sharedIds,
+                        isShared = formListModel.sharedIds.isNotEmpty(),
                     )
 
                     docRef.set(list)
