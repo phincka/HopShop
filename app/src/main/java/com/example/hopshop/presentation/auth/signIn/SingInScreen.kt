@@ -5,24 +5,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,20 +25,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.hopshop.R
+import com.example.hopshop.components.buttons.Button
+import com.example.hopshop.components.design.VerticalSpacer
+import com.example.hopshop.components.form.InputText
 import com.example.hopshop.data.util.AuthState
 import com.example.hopshop.presentation.components.LoadingDialog
 import com.example.hopshop.presentation.components.PasswordField
-import com.example.hopshop.presentation.components.TextError
-import com.example.hopshop.presentation.dashboard.ShareListState
 import com.example.hopshop.presentation.destinations.DashboardScreenDestination
 import com.example.hopshop.presentation.destinations.SignUpScreenDestination
-import com.example.hopshop.presentation.list.VerticalSpacer
 import com.example.hopshop.presentation.main.SnackbarHandler
 import com.example.hopshop.presentation.main.bottomBarPadding
 import com.example.hopshop.ui.theme.AppTheme
@@ -73,7 +61,7 @@ fun SignInScreen(
     var password by remember { mutableStateOf("") }
 
     if (signInState is AuthState.Loading) LoadingDialog()
-    if (signInState is AuthState.Success) navigator.navigate(DashboardScreenDestination)
+    if (signInState is AuthState.Success) navigator.navigate(DashboardScreenDestination())
 
     LaunchedEffect(signInState) {
         launch {
@@ -161,7 +149,7 @@ fun SignInScreen(
             }
         }
 
-        if (signInState is AuthState.Success) navigator.navigate(DashboardScreenDestination)
+        if (signInState is AuthState.Success) navigator.navigate(DashboardScreenDestination())
         if (signInState is AuthState.Loading) LoadingDialog()
     }
 }
@@ -201,97 +189,6 @@ fun BackgroundShapes() {
                 contentDescription = "",
                 modifier = Modifier.fillMaxSize()
             )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun InputText(
-    label: String? = null,
-    placeholder: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    minLines: Int = 1,
-    maxLines: Int = 1,
-) {
-    Column {
-        label?.let {
-            Text(
-                text = label,
-                style = Typography.label,
-                fontWeight = FontWeight.SemiBold,
-                color = AppTheme.colors.neutral90,
-            )
-        }
-
-        VerticalSpacer(6.dp)
-
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = value,
-            onValueChange = onValueChange,
-            placeholder = {
-                Text(
-                    text = placeholder,
-                    style = Typography.label,
-                )
-            },
-            shape = RoundedCornerShape(10.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = AppTheme.colors.purple50,
-                unfocusedBorderColor = AppTheme.colors.neutral30,
-                focusedPlaceholderColor = AppTheme.colors.neutral30,
-                unfocusedPlaceholderColor = AppTheme.colors.neutral30,
-            ),
-            textStyle = Typography.label.copy(
-                fontWeight = FontWeight.Medium,
-                color = AppTheme.colors.neutral90,
-            ),
-            maxLines = maxLines,
-            minLines = minLines,
-            keyboardActions = KeyboardActions(
-                onDone = {}
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next
-            )
-        )
-    }
-}
-
-@Composable
-fun Button(
-    onClick: () -> Unit = {},
-    text: String,
-    isLoading: Boolean = false,
-) {
-    Button(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 56.dp),
-        onClick = onClick,
-        contentPadding = PaddingValues(16.dp),
-        shape = RoundedCornerShape(10.dp),
-    ) {
-        if (!isLoading) {
-            Text(
-                text = text,
-                style = Typography.p,
-                fontWeight = FontWeight.SemiBold
-            )
-        } else {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(18.dp),
-                    color = AppTheme.colors.white,
-                    strokeWidth = 2.dp
-                )
-            }
         }
     }
 }
