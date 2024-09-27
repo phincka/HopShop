@@ -33,6 +33,8 @@ fun CreateListBottomSheet(
 
     var formListModel by remember { mutableStateOf(FormListModel()) }
 
+    var isNameError by remember { mutableStateOf(false) }
+
     listModel?.let {
         formListModel = formListModel.copy(
             id = it.id,
@@ -58,6 +60,7 @@ fun CreateListBottomSheet(
         onValueChange = {
             formListModel = formListModel.copy(name = it)
         },
+        isError = isNameError,
     )
 
     InputText(
@@ -65,6 +68,10 @@ fun CreateListBottomSheet(
         value = formListModel.tag,
         onValueChange = {
             formListModel = formListModel.copy(tag = it)
+        },
+        onDone = {
+            setVisible(false)
+            createList(formListModel)
         },
     )
 
@@ -78,25 +85,18 @@ fun CreateListBottomSheet(
         )
     }
 
-    InputText(
-        placeholder = stringResource(R.string.form_description_label),
-        value = formListModel.description,
-        onValueChange = {
-            formListModel = formListModel.copy(description = it)
-        },
-        onDone = {
-            setVisible(false)
-            createList(formListModel)
-        },
-    )
-
     VerticalSpacer(24.dp)
 
     Button(
         text = stringResource(R.string.form_create_list_button),
         onClick = {
-            createList(formListModel)
-            setVisible(false)
+            if (formListModel.name.isEmpty()) {
+                isNameError = true
+            } else {
+                isNameError = false
+                createList(formListModel)
+                setVisible(false)
+            }
         },
     )
 }

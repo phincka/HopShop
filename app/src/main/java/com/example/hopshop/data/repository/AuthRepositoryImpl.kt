@@ -3,39 +3,56 @@ package com.example.hopshop.data.repository
 import android.content.Context
 import android.util.Log
 import com.example.hopshop.R
+import com.example.hopshop.data.model.ItemModel
 import com.example.hopshop.data.model.UserModel
 import com.example.hopshop.data.util.AccountUserState
 import com.example.hopshop.data.util.AuthState
 import com.example.hopshop.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import org.koin.core.annotation.Single
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 
 @Single
 class AuthRepositoryImpl(
+    private val firebaseFireStore: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth,
     private val context: Context
-): AuthRepository {
-    override suspend fun getCurrentUser(): AccountUserState = try {
-        val user = firebaseAuth.currentUser
+) : AuthRepository {
+    override suspend fun getCurrentUser(): AccountUserState =
+        suspendCoroutine { continuation ->
+            firebaseAuth.currentUser?.let { currentUser ->
+                firebaseFireStore
+                    .collection("users")
+                    .whereEqualTo("uid", currentUser.uid)
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        for (document in querySnapshot.documents) {
+                            val listData = document.data
 
-        if (user != null) {
-            AccountUserState.SignedInState(
-                UserModel(
-                    userId = user.uid,
-                    name = user.displayName ?: "",
-                    email = user.email ?: "",
-                    isEmailVerified = user.isEmailVerified
-                )
-            )
-        } else {
-            AccountUserState.GuestState
+                            listData?.let { data ->
+                                val userModel = UserModel(
+                                    uid = document.id,
+                                    name = data["name"] as? String ?: "",
+                                    email = data["email"] as? String ?: "",
+                                    isModalAlternativeEnable = data["modalAlternativeEnable"] as? Boolean
+                                        ?: false,
+                                )
+                                continuation.resume(AccountUserState.SignedInState(userModel))
+                            }
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        exception.message?.let { AccountUserState.Error(it) }
+                            ?.let { continuation.resume(it) }
+                    }
+            } ?: continuation.resume(AccountUserState.GuestState)
         }
-    } catch (e: Exception) {
-        AccountUserState.Error("Failed: ${e.message}")
-    }
 
     override suspend fun firebaseEmailSignIn(
         email: String,
@@ -60,19 +77,23 @@ class AuthRepositoryImpl(
                 firebaseAuth.createUserWithEmailAndPassword(email, password).await()
                 firebaseEmailSignIn(email, password)
 
-                val currentUser = firebaseAuth.currentUser
-                if (currentUser != null) {
-                    currentUser.sendEmailVerification().await()
+                firebaseAuth.currentUser?.let { currentUser ->
+                    val docRef = firebaseFireStore
+                        .collection("users")
+                        .document()
 
-                    val profileUpdates = userProfileChangeRequest {
-                        displayName = name
-                    }
+                    val userModel = UserModel(
+                        uid = currentUser.uid,
+                        name = name,
+                        email = email,
+                        isModalAlternativeEnable = false,
+                    )
 
-                    currentUser.updateProfile(profileUpdates)
+                    docRef.set(userModel)
+
                     AuthState.Success(true)
-                } else {
-                    AuthState.Error(context.getString(R.string.auth_state_no_user))
-                }
+                } ?:  AuthState.Error(context.getString(R.string.auth_state_passwords_not_equal))
+
             } catch (error: Exception) {
                 AuthState.Error(error.toString())
             }

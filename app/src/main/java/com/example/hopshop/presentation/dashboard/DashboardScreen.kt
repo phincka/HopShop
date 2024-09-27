@@ -17,6 +17,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +33,7 @@ import com.example.hopshop.components.bottomSheet.BottomSheet
 import com.example.hopshop.components.bottomSheet.CreateListBottomSheet
 import com.example.hopshop.components.design.VerticalSpacer
 import com.example.hopshop.components.infoContainer.InfoContainer
+import com.example.hopshop.components.modalDialog.FormModalDialog
 import com.example.hopshop.components.topBar.TopBar
 import com.example.hopshop.data.model.FormListModel
 import com.example.hopshop.data.model.ListModel
@@ -43,11 +45,13 @@ import com.example.hopshop.presentation.components.LoadingDialog
 import com.example.hopshop.presentation.components.TextError
 import com.example.hopshop.presentation.destinations.BaseAuthScreenDestination
 import com.example.hopshop.presentation.destinations.ListScreenDestination
+import com.example.hopshop.presentation.list.ClearListItemsState
 import com.example.hopshop.presentation.main.SnackbarHandler
 import com.example.hopshop.presentation.main.bottomBarPadding
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -61,10 +65,14 @@ fun DashboardScreen(
     navController: NavController,
     snackbarHandler: SnackbarHandler,
 ) {
-    message?.let {
-        snackbarHandler.showSuccessSnackbar(
-            message = it
-        )
+    LaunchedEffect(message) {
+        launch {
+            message?.let {
+                snackbarHandler.showSuccessSnackbar(
+                    message = it
+                )
+            }
+        }
     }
 
     val accountUserState = viewModel.accountUserState.collectAsState().value
@@ -156,15 +164,28 @@ fun DashboardLayout(
             }
         }
 
-        BottomSheet(
-            isVisible = isShareListDialogVisible,
-            setVisible = setVisible,
-        ) {
-            CreateListBottomSheet(
+        if (user.isModalAlternativeEnable) {
+            FormModalDialog(
+                isVisible = isShareListDialogVisible,
                 setVisible = setVisible,
-                createList = createList,
-                createListState = createListState,
-            )
+            ) {
+                CreateListBottomSheet(
+                    setVisible = setVisible,
+                    createList = createList,
+                    createListState = createListState,
+                )
+            }
+        } else {
+            BottomSheet(
+                isVisible = isShareListDialogVisible,
+                setVisible = setVisible,
+            ) {
+                CreateListBottomSheet(
+                    setVisible = setVisible,
+                    createList = createList,
+                    createListState = createListState,
+                )
+            }
         }
     }
 }

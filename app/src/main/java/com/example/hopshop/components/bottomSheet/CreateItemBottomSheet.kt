@@ -30,6 +30,7 @@ fun CreateItemBottomSheet(
     if (createItemState is CreateItemState.Loading) LoadingDialog()
 
     var itemName by remember { mutableStateOf("") }
+    var isNameError by remember { mutableStateOf(false) }
 
     Text(
         text = stringResource(R.string.modal_create_item_title),
@@ -48,16 +49,22 @@ fun CreateItemBottomSheet(
         onDone = {
             createItem(itemName, listId)
             setVisible(false)
-        }
+        },
+        isError = isNameError,
     )
 
     VerticalSpacer(24.dp)
 
     Button(
-        text = "Dodaj",
+        text = stringResource(R.string.add),
         onClick = {
-            createItem(itemName, listId)
-            setVisible(false)
+            if (itemName.isEmpty()) {
+                isNameError = true
+            } else {
+                isNameError = false
+                createItem(itemName, listId)
+                setVisible(false)
+            }
         },
     )
 }
