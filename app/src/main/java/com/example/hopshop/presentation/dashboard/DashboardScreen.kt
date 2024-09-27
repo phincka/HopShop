@@ -17,7 +17,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,11 +24,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.hopshop.R
 import com.example.hopshop.components.bottomSheet.BottomSheet
 import com.example.hopshop.components.bottomSheet.CreateListBottomSheet
 import com.example.hopshop.components.design.VerticalSpacer
+import com.example.hopshop.components.infoContainer.InfoContainer
 import com.example.hopshop.components.topBar.TopBar
 import com.example.hopshop.data.model.FormListModel
 import com.example.hopshop.data.model.ListModel
@@ -46,7 +48,6 @@ import com.example.hopshop.presentation.main.bottomBarPadding
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -59,8 +60,8 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = koinViewModel(),
     navController: NavController,
     snackbarHandler: SnackbarHandler,
-    ) {
-    message?.let{
+) {
+    message?.let {
         snackbarHandler.showSuccessSnackbar(
             message = it
         )
@@ -173,21 +174,28 @@ fun GroceryList(
     groceryLists: List<ListModel>,
     navigateToGroceryList: (String) -> Unit,
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        item {
-            VerticalSpacer(8.dp)
+    if (groceryLists.isNotEmpty()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                VerticalSpacer(8.dp)
+            }
+            items(groceryLists) { list ->
+                GroceryListItem(
+                    navigateToGroceryList = navigateToGroceryList,
+                    list = list
+                )
+            }
+            item {
+                VerticalSpacer(8.dp)
+            }
         }
-        items(groceryLists) { list ->
-            GroceryListItem(
-                navigateToGroceryList = navigateToGroceryList,
-                list = list
-            )
-        }
-        item {
-            VerticalSpacer(8.dp)
-        }
+    } else {
+        InfoContainer(
+            title = stringResource(R.string.empty_lists_title),
+            text = stringResource(R.string.empty_lists_text),
+        )
     }
 }

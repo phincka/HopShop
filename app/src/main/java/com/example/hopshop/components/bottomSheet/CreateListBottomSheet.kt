@@ -34,7 +34,7 @@ fun CreateListBottomSheet(
     var formListModel by remember { mutableStateOf(FormListModel()) }
 
     listModel?.let {
-        formListModel =  formListModel.copy(
+        formListModel = formListModel.copy(
             id = it.id,
             name = it.name,
             description = it.description,
@@ -83,6 +83,10 @@ fun CreateListBottomSheet(
         value = formListModel.description,
         onValueChange = {
             formListModel = formListModel.copy(description = it)
+        },
+        onDone = {
+            setVisible(false)
+            createList(formListModel)
         },
     )
 

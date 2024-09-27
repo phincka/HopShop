@@ -45,6 +45,10 @@ fun CreateItemBottomSheet(
         onValueChange = {
             itemName = it
         },
+        onDone = {
+            createItem(itemName, listId)
+            setVisible(false)
+        }
     )
 
     VerticalSpacer(24.dp)

@@ -45,7 +45,6 @@ class AuthRepositoryImpl(
             firebaseAuth.signInWithEmailAndPassword(email, password).await()
             AuthState.Success(true)
         } catch (error: Exception) {
-            Log.d("LOG_APP", error.toString())
             AuthState.Error(error.toString())
         }
     }

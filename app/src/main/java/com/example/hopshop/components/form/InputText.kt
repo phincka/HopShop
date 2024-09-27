@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -27,7 +28,10 @@ fun InputText(
     onValueChange: (String) -> Unit,
     minLines: Int = 1,
     maxLines: Int = 1,
+    onDone: () -> Unit = {},
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Column {
         label?.let {
             Text(
@@ -64,10 +68,13 @@ fun InputText(
             maxLines = maxLines,
             minLines = minLines,
             keyboardActions = KeyboardActions(
-                onDone = {}
+                onNext = {
+                    onDone()
+                    keyboardController?.hide()
+                },
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next
+                imeAction = ImeAction.Next,
             )
         )
     }
