@@ -118,6 +118,8 @@
 
     <string name="modal_create_item_title">Dodaj element</string>
 
+    <string name="empty_lists_title">Brak list zakupów</string>
+    <string name="empty_lists_text">Dodaj nową listę i ciesz się zakupami</string>
 
 
 
