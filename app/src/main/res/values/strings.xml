@@ -109,9 +109,12 @@
     <string name="edit_list">Edytuj listę</string>
     <string name="selected_items">Kupiono</string>
     <string name="item_name">Co chcesz kupić?</string>
+    <string name="add">Dodaj</string>
+    <string name="required">To pole jest wymagane.</string>
 
     <string name="remove_modal_title">Usuń listę!</string>
     <string name="remove_modal_text">Usuń?</string>
+
 
     <string name="empty_list_title">Lista jest pusta</string>
     <string name="empty_list_text">Dodaj zakupy do tej listy i biegnij na zakupy!</string>

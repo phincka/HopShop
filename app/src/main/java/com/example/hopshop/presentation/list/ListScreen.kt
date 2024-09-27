@@ -32,7 +32,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -72,10 +71,13 @@ import com.example.hopshop.components.bottomSheet.BottomSheet
 import com.example.hopshop.components.bottomSheet.CreateItemBottomSheet
 import com.example.hopshop.components.dropdownMenu.DropdownMenu
 import com.example.hopshop.components.infoContainer.InfoContainer
+import com.example.hopshop.components.modalDialog.FormModalDialog
 import com.example.hopshop.components.modalDialog.ModalDialog
 import com.example.hopshop.data.model.ItemModel
 import com.example.hopshop.data.model.ItemsCountModel
 import com.example.hopshop.data.model.ListModel
+import com.example.hopshop.data.model.UserModel
+import com.example.hopshop.data.util.AccountUserState
 import com.example.hopshop.data.util.DropdownMenuItemData
 import com.example.hopshop.presentation.auth.signIn.BackgroundShapes
 import com.example.hopshop.presentation.components.LoadingDialog
@@ -102,11 +104,13 @@ fun ListScreen(
     viewModel: ListViewModel = koinViewModel(parameters = { parametersOf(listId) }),
     navController: NavController
 ) {
+    val accountUserState = viewModel.accountUserState.collectAsState().value
     val listState = viewModel.listState.collectAsState().value
     val itemsState = viewModel.itemsState.collectAsState().value
     val itemsCountState = viewModel.itemsCountState.collectAsState().value
     val removeListState = viewModel.removeListState.collectAsState().value
     val createItemState = viewModel.createItemState.collectAsState().value
+    val removeItemState = viewModel.removeItemState.collectAsState().value
     val shareListState = viewModel.shareListState.collectAsState().value
     val clearListItemsState = viewModel.clearListItemsState.collectAsState().value
 
@@ -114,7 +118,7 @@ fun ListScreen(
         navigator.navigate(DashboardScreenDestination(message = "Pomyślnie usunięto listę"))
     }
 
-    LaunchedEffect(shareListState, clearListItemsState) {
+    LaunchedEffect(shareListState, clearListItemsState, removeItemState) {
         launch {
             if (shareListState is ShareListState.Error) snackbarHandler.showErrorSnackbar(message = shareListState.message)
             if (clearListItemsState is ClearListItemsState.Error) snackbarHandler.showErrorSnackbar(
@@ -132,6 +136,14 @@ fun ListScreen(
             if (removeListState is RemoveListState.Error) snackbarHandler.showErrorSnackbar(
                 message = removeListState.message
             )
+
+            if (removeItemState is RemoveItemState.Success) snackbarHandler.showSuccessSnackbar(
+                message = "Pomyślnie usunięto"
+            )
+
+            if (removeItemState is RemoveItemState.Error) snackbarHandler.showErrorSnackbar(
+                message = "Wystąpił błąd podczas usuwania"
+            )
         }
     }
 
@@ -143,22 +155,26 @@ fun ListScreen(
     ) {
         BackgroundShapes()
 
-        when (listState) {
-            is ListState.Error -> Unit
-            is ListState.Loading -> LoadingDialog()
-            is ListState.Success -> {
-                ListLayout(
-                    navigator = navigator,
-                    list = listState.list,
-                    itemsState = itemsState,
-                    itemsCountState = itemsCountState,
-                    setItemSelected = viewModel::setItemSelected,
-                    removeItem = viewModel::removeItem,
-                    removeList = viewModel::removeList,
-                    createItemState = createItemState,
-                    createItem = viewModel::createItem,
-                    clearListItems = viewModel::clearListItems,
-                )
+        if (accountUserState is AccountUserState.SignedInState) {
+
+            when (listState) {
+                is ListState.Error -> Unit
+                is ListState.Loading -> LoadingDialog()
+                is ListState.Success -> {
+                    ListLayout(
+                        navigator = navigator,
+                        list = listState.list,
+                        itemsState = itemsState,
+                        itemsCountState = itemsCountState,
+                        setItemSelected = viewModel::setItemSelected,
+                        removeItem = viewModel::removeItem,
+                        removeList = viewModel::removeList,
+                        createItemState = createItemState,
+                        createItem = viewModel::createItem,
+                        clearListItems = viewModel::clearListItems,
+                        user = accountUserState.user,
+                    )
+                }
             }
         }
     }
@@ -181,6 +197,7 @@ fun ListLayout(
     createItemState: CreateItemState,
     createItem: (String, String) -> Unit,
     clearListItems: () -> Unit,
+    user: UserModel,
 ) {
     var isCreateItemDialogVisible by remember { mutableStateOf(false) }
     var isDropdownMenuVisible by remember { mutableStateOf(false) }
@@ -406,16 +423,30 @@ fun ListLayout(
             }
         }
 
-        BottomSheet(
-            isVisible = isCreateItemDialogVisible,
-            setVisible = { isCreateItemDialogVisible = it },
-        ) {
-            CreateItemBottomSheet(
+        if (user.isModalAlternativeEnable) {
+            FormModalDialog(
+                isVisible = isCreateItemDialogVisible,
                 setVisible = { isCreateItemDialogVisible = it },
-                listId = list.id,
-                createItemState = createItemState,
-                createItem = createItem,
-            )
+            ) {
+                CreateItemBottomSheet(
+                    setVisible = { isCreateItemDialogVisible = it },
+                    listId = list.id,
+                    createItemState = createItemState,
+                    createItem = createItem,
+                )
+            }
+        } else {
+            BottomSheet(
+                isVisible = isCreateItemDialogVisible,
+                setVisible = { isCreateItemDialogVisible = it },
+            ) {
+                CreateItemBottomSheet(
+                    setVisible = { isCreateItemDialogVisible = it },
+                    listId = list.id,
+                    createItemState = createItemState,
+                    createItem = createItem,
+                )
+            }
         }
     }
 }

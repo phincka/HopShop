@@ -12,9 +12,11 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.example.hopshop.R
 import com.example.hopshop.components.design.VerticalSpacer
 import com.example.hopshop.ui.theme.AppTheme
 import com.example.hopshop.ui.theme.Typography
@@ -29,6 +31,7 @@ fun InputText(
     minLines: Int = 1,
     maxLines: Int = 1,
     onDone: () -> Unit = {},
+    isError: Boolean = false,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -60,6 +63,7 @@ fun InputText(
                 unfocusedBorderColor = AppTheme.colors.neutral30,
                 focusedPlaceholderColor = AppTheme.colors.neutral30,
                 unfocusedPlaceholderColor = AppTheme.colors.neutral30,
+                errorBorderColor = AppTheme.colors.red,
             ),
             textStyle = Typography.label.copy(
                 fontWeight = FontWeight.Medium,
@@ -75,7 +79,17 @@ fun InputText(
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
-            )
+            ),
+            isError = isError,
+            supportingText = {
+                if (isError) {
+                    Text(
+                        text = stringResource(R.string.required),
+                        style = Typography.small,
+                        color = AppTheme.colors.red
+                    )
+                }
+            }
         )
     }
 }
