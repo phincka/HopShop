@@ -20,10 +20,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.hopshop.R
+import com.example.hopshop.components.buttons.Button
 import com.example.hopshop.presentation.auth.signIn.BackgroundShapes
-import com.example.hopshop.presentation.auth.signIn.Button
 import com.example.hopshop.presentation.destinations.SignInScreenDestination
-import com.example.hopshop.presentation.list.VerticalSpacer
+import com.example.hopshop.components.design.VerticalSpacer
 import com.example.hopshop.presentation.main.bottomBarPadding
 import com.example.hopshop.ui.theme.AppTheme
 import com.example.hopshop.ui.theme.Typography

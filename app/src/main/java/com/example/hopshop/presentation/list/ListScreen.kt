@@ -6,22 +6,18 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -30,30 +26,24 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FolderShared
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -72,22 +62,25 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hopshop.R
+import com.example.hopshop.components.bottomSheet.BottomSheet
+import com.example.hopshop.components.bottomSheet.CreateItemBottomSheet
+import com.example.hopshop.components.dropdownMenu.DropdownMenu
+import com.example.hopshop.components.infoContainer.InfoContainer
+import com.example.hopshop.components.modalDialog.FormModalDialog
+import com.example.hopshop.components.modalDialog.ModalDialog
 import com.example.hopshop.data.model.ItemModel
+import com.example.hopshop.data.model.ItemsCountModel
 import com.example.hopshop.data.model.ListModel
+import com.example.hopshop.data.model.UserModel
+import com.example.hopshop.data.util.AccountUserState
 import com.example.hopshop.data.util.DropdownMenuItemData
-import com.example.hopshop.presentation.auth.signIn.Button
-import com.example.hopshop.presentation.components.BottomSheet
+import com.example.hopshop.presentation.auth.signIn.BackgroundShapes
 import com.example.hopshop.presentation.components.LoadingDialog
-import com.example.hopshop.presentation.components.Modal
 import com.example.hopshop.presentation.dashboard.ShareListState
 import com.example.hopshop.presentation.destinations.DashboardScreenDestination
 import com.example.hopshop.presentation.main.SnackbarHandler
@@ -111,20 +104,45 @@ fun ListScreen(
     viewModel: ListViewModel = koinViewModel(parameters = { parametersOf(listId) }),
     navController: NavController
 ) {
+    val accountUserState = viewModel.accountUserState.collectAsState().value
     val listState = viewModel.listState.collectAsState().value
     val itemsState = viewModel.itemsState.collectAsState().value
     val itemsCountState = viewModel.itemsCountState.collectAsState().value
     val removeListState = viewModel.removeListState.collectAsState().value
     val createItemState = viewModel.createItemState.collectAsState().value
+    val removeItemState = viewModel.removeItemState.collectAsState().value
     val shareListState = viewModel.shareListState.collectAsState().value
+    val clearListItemsState = viewModel.clearListItemsState.collectAsState().value
 
-    if (removeListState is RemoveListState.Success) navigator.navigate(DashboardScreenDestination)
+    if (removeListState is RemoveListState.Success) {
+        navigator.navigate(DashboardScreenDestination(message = "Pomyślnie usunięto listę"))
+    }
 
-    LaunchedEffect(shareListState) {
+    LaunchedEffect(shareListState, clearListItemsState, removeItemState) {
         launch {
             if (shareListState is ShareListState.Error) snackbarHandler.showErrorSnackbar(message = shareListState.message)
+            if (clearListItemsState is ClearListItemsState.Error) snackbarHandler.showErrorSnackbar(
+                message = clearListItemsState.message
+            )
+
             if (shareListState is ShareListState.Success) snackbarHandler.showSuccessSnackbar(
                 message = "Pomyślnie udostępniono listę"
+            )
+
+            if (clearListItemsState is ClearListItemsState.Success) snackbarHandler.showSuccessSnackbar(
+                message = "Pomyślnie wyczyszczono listę"
+            )
+
+            if (removeListState is RemoveListState.Error) snackbarHandler.showErrorSnackbar(
+                message = removeListState.message
+            )
+
+            if (removeItemState is RemoveItemState.Success) snackbarHandler.showSuccessSnackbar(
+                message = "Pomyślnie usunięto"
+            )
+
+            if (removeItemState is RemoveItemState.Error) snackbarHandler.showErrorSnackbar(
+                message = "Wystąpił błąd podczas usuwania"
             )
         }
     }
@@ -135,24 +153,28 @@ fun ListScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        when (listState) {
-            is ListState.Error -> Unit
-            is ListState.Loading -> LoadingDialog()
-            is ListState.Success -> {
-                ListLayout(
-                    navigator = navigator,
-                    list = listState.list,
-                    itemsState = itemsState,
-                    itemsCount = itemsCountState,
-                    setItemSelected = viewModel::setItemSelected,
-                    removeItem = viewModel::removeItem,
-                    removeList = viewModel::removeList,
-                    shareList = viewModel::shareList,
-                    removeSharedList = viewModel::removeSharedList,
-                    createItemState = createItemState,
-                    shareListState = shareListState,
-                    createItem = viewModel::createItem,
-                )
+        BackgroundShapes()
+
+        if (accountUserState is AccountUserState.SignedInState) {
+
+            when (listState) {
+                is ListState.Error -> Unit
+                is ListState.Loading -> LoadingDialog()
+                is ListState.Success -> {
+                    ListLayout(
+                        navigator = navigator,
+                        list = listState.list,
+                        itemsState = itemsState,
+                        itemsCountState = itemsCountState,
+                        setItemSelected = viewModel::setItemSelected,
+                        removeItem = viewModel::removeItem,
+                        removeList = viewModel::removeList,
+                        createItemState = createItemState,
+                        createItem = viewModel::createItem,
+                        clearListItems = viewModel::clearListItems,
+                        user = accountUserState.user,
+                    )
+                }
             }
         }
     }
@@ -168,20 +190,22 @@ fun ListLayout(
     navigator: DestinationsNavigator,
     list: ListModel,
     itemsState: ItemsState,
-    itemsCount: ItemsCountState,
+    itemsCountState: ItemsCountState,
     setItemSelected: (String, Boolean) -> Unit,
     removeItem: (String) -> Unit,
     removeList: (String) -> Unit,
-    shareList: (String, String) -> Unit,
-    removeSharedList: (String, String) -> Unit,
     createItemState: CreateItemState,
-    shareListState: ShareListState,
     createItem: (String, String) -> Unit,
+    clearListItems: () -> Unit,
+    user: UserModel,
 ) {
     var isCreateItemDialogVisible by remember { mutableStateOf(false) }
     var isDropdownMenuVisible by remember { mutableStateOf(false) }
     var isModalActive by remember { mutableStateOf(false) }
     var isShareListDialogVisible by remember { mutableStateOf(false) }
+
+    var isShoppingCompleteModalActive by remember { mutableStateOf(true) }
+
 
     val menuItems = listOf(
         DropdownMenuItemData(
@@ -191,17 +215,17 @@ fun ListLayout(
 //                navigator.navigate(CreateListScreenDestination(listId = list.id))
             }
         ),
-        DropdownMenuItemData(
-            icon = Icons.Outlined.Share,
-            text = stringResource(R.string.share),
-            onClick = {
-                isShareListDialogVisible = true
-                isDropdownMenuVisible = false
-            }
-        ),
+//        DropdownMenuItemData(
+//            icon = Icons.Outlined.Share,
+//            text = stringResource(R.string.share),
+//            onClick = {
+//                isShareListDialogVisible = true
+//                isDropdownMenuVisible = false
+//            }
+//        ),
         DropdownMenuItemData(
             icon = Icons.Outlined.Clear,
-            text = stringResource(R.string.loading), //usuń,
+            text = stringResource(R.string.remove_modal_title),
             onClick = {
                 isModalActive = true
             }
@@ -209,12 +233,20 @@ fun ListLayout(
     )
 
     Scaffold(
+        containerColor = Color.Transparent,
         topBar = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
                 CenterAlignedTopAppBar(
+                    colors = TopAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = Color.Transparent,
+                        navigationIconContentColor = Color.Transparent,
+                        titleContentColor = Color.Transparent,
+                        actionIconContentColor = Color.Transparent,
+                    ),
                     title = {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -240,10 +272,6 @@ fun ListLayout(
                             }
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        titleContentColor = MaterialTheme.colorScheme.primary,
-                    ),
                     navigationIcon = {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -308,69 +336,51 @@ fun ListLayout(
                     }
                 )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                itemsCountState.takeIfSuccess()?.itemsCount?.let { itemsCountModel ->
+                    ItemsCount(
+                        itemsCountModel = itemsCountModel,
+                        isShoppingCompleteModalActive = isShoppingCompleteModalActive,
+                        setShoppingCompleteModalActive = { isShoppingCompleteModalActive = it },
+                        clearListItems = clearListItems,
+                    )
+                }
 
-                    if (itemsCount is ItemsCountState.Success) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.List,
-                                contentDescription = "Localized description",
-                                tint = AppTheme.colors.grey,
-                                modifier = Modifier.size(16.dp)
-                            )
+                if (list.tag.isNotEmpty()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Label,
+                            contentDescription = "Localized description",
+                            tint = AppTheme.colors.grey,
+                            modifier = Modifier
+                                .size(16.dp)
+                                .rotate(-45f)
+                        )
 
-                            Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
 
-                            Text(
-                                text = "${stringResource(R.string.selected_items)} ${itemsCount.itemsCount.selected} z ${itemsCount.itemsCount.items}",
-                                style = Typography.small,
-                                fontWeight = FontWeight.Medium,
-                                color = AppTheme.colors.grey,
-                            )
-                        }
-                    }
-
-                    if (list.tag.isNotEmpty()) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Label,
-                                contentDescription = "Localized description",
-                                tint = AppTheme.colors.grey,
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .rotate(-45f)
-                            )
-
-                            Spacer(modifier = Modifier.width(4.dp))
-
-                            Text(
-                                text = list.tag,
-                                style = Typography.small,
-                                fontWeight = FontWeight.Medium,
-                                color = AppTheme.colors.grey,
-                            )
-                        }
+                        Text(
+                            text = list.tag,
+                            style = Typography.small,
+                            fontWeight = FontWeight.Medium,
+                            color = AppTheme.colors.grey,
+                        )
                     }
                 }
             }
 
-            Dropdown(
+            DropdownMenu(
                 isDropdownMenuVisible = isDropdownMenuVisible,
                 setDropdownMenuVisible = { isDropdownMenuVisible = it },
                 menuItems = menuItems
             )
 
-            Modal(
+            ModalDialog(
                 dialogTitle = stringResource(R.string.remove_modal_title),
                 dialogText = stringResource(R.string.remove_modal_text),
+                confirmButtonText = stringResource(R.string.remove_modal_remove),
+                dismissButtonText = stringResource(R.string.remove_modal_cancel),
                 icon = Icons.Filled.Warning,
                 isModalActive = isModalActive,
                 onDismissRequest = { isModalActive = false },
@@ -386,7 +396,6 @@ fun ListLayout(
                 Icon(Icons.Filled.Add, "Large floating action button")
             }
         },
-        containerColor = Color.White,
         modifier = Modifier.padding(horizontal = 16.dp),
     ) {
         Column(
@@ -405,53 +414,39 @@ fun ListLayout(
                             setItemSelected = setItemSelected,
                         )
                     } else {
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .padding(top = 105.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Label,
-                                contentDescription = "Localized description",
-                                tint = AppTheme.colors.purple,
-                                modifier = Modifier.size(56.dp)
-                            )
-
-                            Text(
-                                text = stringResource(R.string.empty_list_title),
-                                style = Typography.h5,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppTheme.colors.black90,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.width(264.dp)
-                            )
-
-                            Text(
-                                text = stringResource(R.string.empty_list_text),
-                                style = Typography.label,
-                                color = AppTheme.colors.grey,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.width(264.dp)
-                            )
-
-                        }
+                        InfoContainer(
+                            title = stringResource(R.string.empty_list_title),
+                            text = stringResource(R.string.empty_list_text),
+                        )
                     }
                 }
             }
         }
 
-        BottomSheet(
-            isVisible = isCreateItemDialogVisible,
-            setVisible = { isCreateItemDialogVisible = it },
-        ) {
-            CreateItemDialog(
+        if (user.isModalAlternativeEnable) {
+            FormModalDialog(
+                isVisible = isCreateItemDialogVisible,
                 setVisible = { isCreateItemDialogVisible = it },
-                listId = list.id,
-                createItemState = createItemState,
-                createItem = createItem,
-            )
+            ) {
+                CreateItemBottomSheet(
+                    setVisible = { isCreateItemDialogVisible = it },
+                    listId = list.id,
+                    createItemState = createItemState,
+                    createItem = createItem,
+                )
+            }
+        } else {
+            BottomSheet(
+                isVisible = isCreateItemDialogVisible,
+                setVisible = { isCreateItemDialogVisible = it },
+            ) {
+                CreateItemBottomSheet(
+                    setVisible = { isCreateItemDialogVisible = it },
+                    listId = list.id,
+                    createItemState = createItemState,
+                    createItem = createItem,
+                )
+            }
         }
     }
 }
@@ -582,24 +577,25 @@ fun ChangeableButton(
                     imageVector = Icons.Filled.CheckBox,
                     contentDescription = "Localized description",
                     tint = AppTheme.colors.purple,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             } else {
                 Icon(
                     imageVector = Icons.Filled.CheckBoxOutlineBlank,
                     contentDescription = "Localized description",
                     tint = AppTheme.colors.gray30,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             }
         },
         shape = RoundedCornerShape(8.dp),
-        textStyle = Typography.small,
+        textStyle = Typography.label.copy(
+            fontWeight = FontWeight.SemiBold
+        ),
         colors = TextFieldDefaults.colors(
             disabledContainerColor = if (isSelected && !isEditing) AppTheme.colors.purpleWhite else AppTheme.colors.grey20,
             disabledIndicatorColor = if (isSelected && !isEditing) AppTheme.colors.purple50 else AppTheme.colors.grey50,
             disabledTextColor = if (isSelected && !isEditing) AppTheme.colors.purple else AppTheme.colors.black,
-
             focusedContainerColor = AppTheme.colors.grey20,
             focusedIndicatorColor = AppTheme.colors.grey50,
             focusedTextColor = AppTheme.colors.black,
@@ -609,107 +605,55 @@ fun ChangeableButton(
 
 
 @Composable
-fun VerticalSpacer(height: Dp) = Spacer(modifier = Modifier.height(height))
-
-@SuppressLint("StateFlowValueCalledInComposition")
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CreateItemDialog(
-    setVisible: (Boolean) -> Unit,
-    listId: String,
-    createItemState: CreateItemState,
-    createItem: (String, String) -> Unit,
+fun ItemsCount(
+    itemsCountModel: ItemsCountModel,
+    isShoppingCompleteModalActive: Boolean,
+    setShoppingCompleteModalActive: (Boolean) -> Unit,
+    clearListItems: () -> Unit,
 ) {
-    var itemName by remember { mutableStateOf("") }
-
-    if (createItemState is CreateItemState.Loading) LoadingDialog()
-
-    Text(
-        text = stringResource(R.string.modal_create_item_title),
-        style = Typography.h5,
-        fontWeight = FontWeight.Bold,
-        color = AppTheme.colors.black,
-    )
-    VerticalSpacer(16.dp)
-
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = itemName,
-        onValueChange = { itemName = it },
-        label = {
-            Text(stringResource(R.string.form_create_item_label))
-        },
-        shape = RoundedCornerShape(8.dp),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = AppTheme.colors.purple,
-            unfocusedBorderColor = AppTheme.colors.gray30,
-        ),
-        textStyle = TextStyle.Default.copy(
-            fontSize = 16.sp,
-            lineHeight = 24.sp,
-            color = AppTheme.colors.grey,
-        ),
-        maxLines = 1,
-        keyboardActions = KeyboardActions(
-            onDone = {}
-        ),
-        keyboardOptions = KeyboardOptions.Default.copy(
-            imeAction = ImeAction.Next
-        )
-    )
-
-    VerticalSpacer(24.dp)
-
-    Button(
-        text = "Dodaj",
-        onClick = {
-            createItem(itemName, listId)
-            setVisible(false)
-        },
-    )
-}
-
-@Composable
-fun Dropdown(
-    isDropdownMenuVisible: Boolean,
-    setDropdownMenuVisible: (Boolean) -> Unit,
-    menuItems: List<DropdownMenuItemData>
-) {
-    if (!isDropdownMenuVisible) return
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentSize(Alignment.TopEnd)
-            .offset(y = 64.dp)
-            .background(Color.LightGray)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        DropdownMenu(
-            expanded = true,
-            onDismissRequest = { setDropdownMenuVisible(false) },
-            modifier = Modifier.width(240.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            menuItems.forEachIndexed { index, item ->
-                if (index == menuItems.size - 1 && menuItems.size > 1) {
-                    HorizontalDivider()
-                    Spacer(modifier = Modifier.height(6.dp))
-                }
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.List,
+                contentDescription = "Localized description",
+                tint = AppTheme.colors.grey,
+                modifier = Modifier.size(16.dp)
+            )
 
-                DropdownMenuItem(
-                    text = {
-                        Text(item.text)
-                    },
-                    onClick = {
-                        item.onClick()
-                    },
-                    leadingIcon = {
-                        Icon(
-                            item.icon,
-                            contentDescription = null
-                        )
-                    }
-                )
-            }
+            Spacer(modifier = Modifier.width(4.dp))
+
+            Text(
+                text = "${stringResource(R.string.selected_items)} ${itemsCountModel.selected} z ${itemsCountModel.items}",
+                style = Typography.small,
+                fontWeight = FontWeight.Medium,
+                color = AppTheme.colors.grey,
+            )
+        }
+
+        if (itemsCountModel.items == itemsCountModel.selected && itemsCountModel.items > 0) {
+            ModalDialog(
+                dialogTitle = stringResource(R.string.clear_list_modal_title),
+                dialogText = stringResource(R.string.clear_list_modal_text),
+                confirmButtonText = stringResource(R.string.clear_list_modal_remove),
+                dismissButtonText = stringResource(R.string.clear_list_modal_cancel),
+                icon = Icons.Filled.Warning,
+                isModalActive = isShoppingCompleteModalActive,
+                onDismissRequest = {
+                    setShoppingCompleteModalActive(false)
+                },
+                onConfirmation = {
+                    clearListItems()
+                    setShoppingCompleteModalActive(false)
+                },
+            )
         }
     }
 }
+
+private fun ItemsCountState.takeIfSuccess() = (this as? ItemsCountState.Success)
