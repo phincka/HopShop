@@ -1,4 +1,4 @@
-package com.example.hopshop.presentation.main
+package pl.hincka.hopshop.presentation.main
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -42,7 +42,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import androidx.navigation.NavController.OnDestinationChangedListener
-import com.example.hopshop.ui.theme.AppTheme
+import pl.hincka.hopshop.ui.theme.AppTheme
 
 @Composable
 fun Snackbar(

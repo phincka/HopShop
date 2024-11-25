@@ -1,10 +1,10 @@
-package com.example.hopshop.presentation.auth.signUp
+package pl.hincka.hopshop.presentation.auth.signUp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.hopshop.data.util.AuthState
-import com.example.hopshop.domain.usecase.auth.SignInUseCase
-import com.example.hopshop.domain.usecase.auth.SignUpUseCase
+import pl.hincka.hopshop.data.util.AuthState
+import pl.hincka.hopshop.domain.usecase.auth.SignInUseCase
+import pl.hincka.hopshop.domain.usecase.auth.SignUpUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

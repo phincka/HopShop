@@ -1,4 +1,4 @@
-package com.example.hopshop.presentation.components
+package pl.hincka.hopshop.presentation.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.hopshop.ui.theme.Typography
+import pl.hincka.hopshop.ui.theme.Typography
 
 @Composable
 fun TextError(

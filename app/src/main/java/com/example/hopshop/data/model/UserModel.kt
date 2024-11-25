@@ -1,4 +1,4 @@
-package com.example.hopshop.data.model
+package pl.hincka.hopshop.data.model
 
 data class UserModel (
     val uid: String,

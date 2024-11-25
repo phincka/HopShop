@@ -1,4 +1,4 @@
-package com.example.hopshop.components.topBar
+package pl.hincka.hopshop.components.topBar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,9 +25,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.hopshop.data.model.UserModel
-import com.example.hopshop.ui.theme.AppTheme
-import com.example.hopshop.ui.theme.Typography
+import pl.hincka.hopshop.data.model.UserModel
+import pl.hincka.hopshop.ui.theme.AppTheme
+import pl.hincka.hopshop.ui.theme.Typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,4 +1,4 @@
-package com.example.hopshop.components.dropdownMenu
+package pl.hincka.hopshop.components.dropdownMenu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,8 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.hopshop.data.util.DropdownMenuItemData
-import com.example.hopshop.ui.theme.AppTheme
+import pl.hincka.hopshop.data.util.DropdownMenuItemData
+import pl.hincka.hopshop.ui.theme.AppTheme
 
 @Composable
 fun DropdownMenu(

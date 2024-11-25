@@ -1,4 +1,4 @@
-package com.example.hopshop.presentation.account
+package pl.hincka.hopshop.presentation.account
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
@@ -11,12 +11,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.hopshop.data.util.AccountUserState
-import com.example.hopshop.presentation.components.FilledButton
-import com.example.hopshop.presentation.components.LoadingDialog
-import com.example.hopshop.presentation.components.TextError
-import com.example.hopshop.presentation.destinations.BaseAuthScreenDestination
-import com.example.hopshop.presentation.main.bottomBarPadding
+import pl.hincka.hopshop.data.util.AccountUserState
+import pl.hincka.hopshop.presentation.components.FilledButton
+import pl.hincka.hopshop.presentation.components.LoadingDialog
+import pl.hincka.hopshop.presentation.components.TextError
+import pl.hincka.hopshop.presentation.destinations.BaseAuthScreenDestination
+import pl.hincka.hopshop.presentation.main.bottomBarPadding
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator

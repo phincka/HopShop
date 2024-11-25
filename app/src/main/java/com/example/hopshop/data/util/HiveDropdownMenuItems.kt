@@ -1,4 +1,4 @@
-package com.example.hopshop.data.util
+package pl.hincka.hopshop.data.util
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

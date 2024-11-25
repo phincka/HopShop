@@ -1,4 +1,4 @@
-package com.example.hopshop.components.bottomSheet
+package pl.hincka.hopshop.components.bottomSheet
 
 import android.annotation.SuppressLint
 import androidx.compose.material3.Text
@@ -10,14 +10,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.hopshop.R
-import com.example.hopshop.components.buttons.Button
-import com.example.hopshop.components.design.VerticalSpacer
-import com.example.hopshop.components.form.InputText
-import com.example.hopshop.presentation.components.LoadingDialog
-import com.example.hopshop.presentation.list.CreateItemState
-import com.example.hopshop.ui.theme.AppTheme
-import com.example.hopshop.ui.theme.Typography
+import pl.hincka.hopshop.R
+import pl.hincka.hopshop.components.buttons.Button
+import pl.hincka.hopshop.components.design.VerticalSpacer
+import pl.hincka.hopshop.components.form.InputText
+import pl.hincka.hopshop.presentation.components.LoadingDialog
+import pl.hincka.hopshop.presentation.list.CreateItemState
+import pl.hincka.hopshop.ui.theme.AppTheme
+import pl.hincka.hopshop.ui.theme.Typography
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable

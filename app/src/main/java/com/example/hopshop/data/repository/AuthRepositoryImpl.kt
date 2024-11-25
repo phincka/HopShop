@@ -1,13 +1,13 @@
-package com.example.hopshop.data.repository
+package pl.hincka.hopshop.data.repository
 
 import android.content.Context
 import android.util.Log
-import com.example.hopshop.R
-import com.example.hopshop.data.model.ItemModel
-import com.example.hopshop.data.model.UserModel
-import com.example.hopshop.data.util.AccountUserState
-import com.example.hopshop.data.util.AuthState
-import com.example.hopshop.domain.repository.AuthRepository
+import pl.hincka.hopshop.R
+import pl.hincka.hopshop.data.model.ItemModel
+import pl.hincka.hopshop.data.model.UserModel
+import pl.hincka.hopshop.data.util.AccountUserState
+import pl.hincka.hopshop.data.util.AuthState
+import pl.hincka.hopshop.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore

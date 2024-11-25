@@ -1,8 +1,8 @@
-package com.example.hopshop.domain.usecase.list
+package pl.hincka.hopshop.domain.usecase.list
 
-import com.example.hopshop.data.model.ItemsCountModel
-import com.example.hopshop.data.model.ListModel
-import com.example.hopshop.domain.repository.ListRepository
+import pl.hincka.hopshop.data.model.ItemsCountModel
+import pl.hincka.hopshop.data.model.ListModel
+import pl.hincka.hopshop.domain.repository.ListRepository
 import org.koin.core.annotation.Single
 
 @Single

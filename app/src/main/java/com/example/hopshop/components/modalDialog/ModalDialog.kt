@@ -1,4 +1,4 @@
-package com.example.hopshop.components.modalDialog
+package pl.hincka.hopshop.components.modalDialog
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -6,8 +6,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
-import com.example.hopshop.components.buttons.Button
-import com.example.hopshop.components.buttons.SmallButton
+import pl.hincka.hopshop.components.buttons.Button
+import pl.hincka.hopshop.components.buttons.SmallButton
 
 @Composable
 fun ModalDialog(

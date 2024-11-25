@@ -1,14 +1,13 @@
-package com.example.hopshop.domain.repository
+package pl.hincka.hopshop.domain.repository
 
-import com.example.hopshop.data.model.FormListModel
-import com.example.hopshop.data.model.ItemsCountModel
-import com.example.hopshop.data.model.ListModel
-import com.example.hopshop.presentation.dashboard.CreateListState
-import com.example.hopshop.presentation.dashboard.ListsState
-import com.example.hopshop.presentation.dashboard.RemoveSharedListState
-import com.example.hopshop.presentation.dashboard.ShareListState
-import com.example.hopshop.presentation.list.ClearListItemsState
-import com.example.hopshop.presentation.list.RemoveListState
+import pl.hincka.hopshop.data.model.FormListModel
+import pl.hincka.hopshop.data.model.ItemsCountModel
+import pl.hincka.hopshop.data.model.ListModel
+import pl.hincka.hopshop.presentation.dashboard.CreateListState
+import pl.hincka.hopshop.presentation.dashboard.ListsState
+import pl.hincka.hopshop.presentation.dashboard.RemoveSharedListState
+import pl.hincka.hopshop.presentation.dashboard.ShareListState
+import pl.hincka.hopshop.presentation.list.RemoveListState
 
 
 interface ListRepository {

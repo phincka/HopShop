@@ -8,8 +8,8 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.example.hopshop" />
-                  <option name="mobileSdkAppId" value="1:537286946756:android:7aae4c674d24c758453e91" />
+                  <option name="appId" value="pl.hincka.hopshop" />
+                  <option name="mobileSdkAppId" value="1:537286946756:android:f6b29b517f5f5137453e91" />
                   <option name="projectId" value="hopshop-b37ee" />
                   <option name="projectNumber" value="537286946756" />
                 </ConnectionSetting>

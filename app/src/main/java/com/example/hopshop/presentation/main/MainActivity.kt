@@ -1,4 +1,4 @@
-package com.example.hopshop.presentation.main
+package pl.hincka.hopshop.presentation.main
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -16,8 +16,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.example.hopshop.presentation.NavGraphs
-import com.example.hopshop.ui.theme.AppTheme
+import pl.hincka.hopshop.presentation.NavGraphs
+import pl.hincka.hopshop.ui.theme.AppTheme
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations

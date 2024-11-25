@@ -1,4 +1,4 @@
-package com.example.hopshop.presentation.components
+package pl.hincka.hopshop.presentation.components
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text

@@ -1,4 +1,4 @@
-package com.example.hopshop.presentation.components
+package pl.hincka.hopshop.presentation.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding

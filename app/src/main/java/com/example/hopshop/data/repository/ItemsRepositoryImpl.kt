@@ -1,11 +1,11 @@
-package com.example.hopshop.data.repository
+package pl.hincka.hopshop.data.repository
 
 import android.util.Log
-import com.example.hopshop.data.model.ItemModel
-import com.example.hopshop.domain.repository.ItemsRepository
-import com.example.hopshop.presentation.list.ClearListItemsState
-import com.example.hopshop.presentation.list.RemoveItemState
-import com.example.hopshop.presentation.list.SetItemSelectedState
+import pl.hincka.hopshop.data.model.ItemModel
+import pl.hincka.hopshop.domain.repository.ItemsRepository
+import pl.hincka.hopshop.presentation.list.ClearListItemsState
+import pl.hincka.hopshop.presentation.list.RemoveItemState
+import pl.hincka.hopshop.presentation.list.SetItemSelectedState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.suspendCancellableCoroutine

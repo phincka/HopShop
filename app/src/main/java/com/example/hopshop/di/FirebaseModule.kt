@@ -1,4 +1,4 @@
-package com.example.hopshop.di
+package pl.hincka.hopshop.di
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth

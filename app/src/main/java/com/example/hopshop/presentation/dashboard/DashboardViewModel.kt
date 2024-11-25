@@ -1,15 +1,15 @@
-package com.example.hopshop.presentation.dashboard
+package pl.hincka.hopshop.presentation.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.hopshop.data.model.FormListModel
-import com.example.hopshop.data.model.ItemsCountModel
-import com.example.hopshop.data.model.ListModel
-import com.example.hopshop.data.util.AccountUserState
-import com.example.hopshop.domain.usecase.auth.GetCurrentUserUseCase
-import com.example.hopshop.domain.usecase.auth.SignOutUseCase
-import com.example.hopshop.domain.usecase.list.CreateListUseCase
-import com.example.hopshop.domain.usecase.list.GetListsUseCase
+import pl.hincka.hopshop.data.model.FormListModel
+import pl.hincka.hopshop.data.model.ItemsCountModel
+import pl.hincka.hopshop.data.model.ListModel
+import pl.hincka.hopshop.data.util.AccountUserState
+import pl.hincka.hopshop.domain.usecase.auth.GetCurrentUserUseCase
+import pl.hincka.hopshop.domain.usecase.auth.SignOutUseCase
+import pl.hincka.hopshop.domain.usecase.list.CreateListUseCase
+import pl.hincka.hopshop.domain.usecase.list.GetListsUseCase
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -104,7 +104,7 @@ sealed class RemoveSharedListState {
 sealed class CreateListState {
     data object Loading : CreateListState()
     data object None : CreateListState()
-    data class Success(val list: ListModel? = null) : CreateListState()
+    data object Success : CreateListState()
     data class Redirect(val listId: String) : CreateListState()
     data class Error(val message: String) : CreateListState()
 }

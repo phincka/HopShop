@@ -1,4 +1,4 @@
-package com.example.hopshop
+package pl.hincka.hopshop
 
 import org.junit.Test
 

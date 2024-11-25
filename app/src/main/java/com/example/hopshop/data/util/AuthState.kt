@@ -1,6 +1,6 @@
-package com.example.hopshop.data.util
+package pl.hincka.hopshop.data.util
 
-import com.example.hopshop.data.model.UserModel
+import pl.hincka.hopshop.data.model.UserModel
 //data class SignInState(
 //    val isSignInSuccessful: Boolean = false,
 //    val signInError: String? = null
