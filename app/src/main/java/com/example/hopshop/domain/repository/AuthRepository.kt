@@ -1,7 +1,7 @@
-package com.example.hopshop.domain.repository
+package pl.hincka.hopshop.domain.repository
 
-import com.example.hopshop.data.util.AccountUserState
-import com.example.hopshop.data.util.AuthState
+import pl.hincka.hopshop.data.util.AccountUserState
+import pl.hincka.hopshop.data.util.AuthState
 
 
 interface AuthRepository {

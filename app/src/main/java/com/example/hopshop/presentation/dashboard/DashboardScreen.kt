@@ -1,4 +1,4 @@
-package com.example.hopshop.presentation.dashboard
+package pl.hincka.hopshop.presentation.dashboard
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -28,26 +28,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.hopshop.R
-import com.example.hopshop.components.bottomSheet.BottomSheet
-import com.example.hopshop.components.bottomSheet.CreateListBottomSheet
-import com.example.hopshop.components.design.VerticalSpacer
-import com.example.hopshop.components.infoContainer.InfoContainer
-import com.example.hopshop.components.modalDialog.FormModalDialog
-import com.example.hopshop.components.topBar.TopBar
-import com.example.hopshop.data.model.FormListModel
-import com.example.hopshop.data.model.ListModel
-import com.example.hopshop.data.model.UserModel
-import com.example.hopshop.data.util.AccountUserState
-import com.example.hopshop.presentation.auth.signIn.BackgroundShapes
-import com.example.hopshop.presentation.components.GroceryListItem
-import com.example.hopshop.presentation.components.LoadingDialog
-import com.example.hopshop.presentation.components.TextError
-import com.example.hopshop.presentation.destinations.BaseAuthScreenDestination
-import com.example.hopshop.presentation.destinations.ListScreenDestination
-import com.example.hopshop.presentation.list.ClearListItemsState
-import com.example.hopshop.presentation.main.SnackbarHandler
-import com.example.hopshop.presentation.main.bottomBarPadding
+import pl.hincka.hopshop.R
+import pl.hincka.hopshop.components.bottomSheet.BottomSheet
+import pl.hincka.hopshop.components.bottomSheet.CreateListBottomSheet
+import pl.hincka.hopshop.components.design.VerticalSpacer
+import pl.hincka.hopshop.components.infoContainer.InfoContainer
+import pl.hincka.hopshop.components.modalDialog.FormModalDialog
+import pl.hincka.hopshop.components.topBar.TopBar
+import pl.hincka.hopshop.data.model.FormListModel
+import pl.hincka.hopshop.data.model.ListModel
+import pl.hincka.hopshop.data.model.UserModel
+import pl.hincka.hopshop.data.util.AccountUserState
+import pl.hincka.hopshop.presentation.auth.signIn.BackgroundShapes
+import pl.hincka.hopshop.presentation.components.GroceryListItem
+import pl.hincka.hopshop.presentation.components.LoadingDialog
+import pl.hincka.hopshop.presentation.components.TextError
+import pl.hincka.hopshop.presentation.destinations.BaseAuthScreenDestination
+import pl.hincka.hopshop.presentation.destinations.ListScreenDestination
+import pl.hincka.hopshop.presentation.list.ClearListItemsState
+import pl.hincka.hopshop.presentation.main.SnackbarHandler
+import pl.hincka.hopshop.presentation.main.bottomBarPadding
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -171,7 +171,7 @@ fun DashboardLayout(
             ) {
                 CreateListBottomSheet(
                     setVisible = setVisible,
-                    createList = createList,
+                    executeFunction = createList,
                     createListState = createListState,
                 )
             }
@@ -182,7 +182,7 @@ fun DashboardLayout(
             ) {
                 CreateListBottomSheet(
                     setVisible = setVisible,
-                    createList = createList,
+                    executeFunction = createList,
                     createListState = createListState,
                 )
             }

@@ -1,8 +1,9 @@
-package com.example.hopshop.components.bottomSheet
+package pl.hincka.hopshop.components.bottomSheet
 
 import android.annotation.SuppressLint
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -10,22 +11,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.hopshop.R
-import com.example.hopshop.components.buttons.Button
-import com.example.hopshop.components.design.VerticalSpacer
-import com.example.hopshop.components.form.InputText
-import com.example.hopshop.data.model.FormListModel
-import com.example.hopshop.data.model.ListModel
-import com.example.hopshop.presentation.components.LoadingDialog
-import com.example.hopshop.presentation.dashboard.CreateListState
-import com.example.hopshop.ui.theme.AppTheme
-import com.example.hopshop.ui.theme.Typography
+import pl.hincka.hopshop.R
+import pl.hincka.hopshop.components.buttons.Button
+import pl.hincka.hopshop.components.design.VerticalSpacer
+import pl.hincka.hopshop.components.form.InputText
+import pl.hincka.hopshop.data.model.FormListModel
+import pl.hincka.hopshop.data.model.ListModel
+import pl.hincka.hopshop.presentation.components.LoadingDialog
+import pl.hincka.hopshop.presentation.dashboard.CreateListState
+import pl.hincka.hopshop.ui.theme.AppTheme
+import pl.hincka.hopshop.ui.theme.Typography
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun CreateListBottomSheet(
     setVisible: (Boolean) -> Unit,
-    createList: (FormListModel) -> Unit,
+    executeFunction: (FormListModel) -> Unit,
     createListState: CreateListState,
     listModel: ListModel? = null,
 ) {
@@ -35,18 +36,20 @@ fun CreateListBottomSheet(
 
     var isNameError by remember { mutableStateOf(false) }
 
-    listModel?.let {
-        formListModel = formListModel.copy(
-            id = it.id,
-            name = it.name,
-            description = it.description,
-            tag = it.tag,
-            sharedIds = it.sharedIds,
-        )
+    LaunchedEffect(listModel) {
+        listModel?.let {
+            formListModel = formListModel.copy(
+                id = it.id,
+                name = it.name,
+                description = it.description,
+                tag = it.tag,
+                sharedIds = it.sharedIds,
+            )
+        }
     }
 
     Text(
-        text = stringResource(R.string.create_list),
+        text = if (listModel != null) stringResource(R.string.edit_list) else stringResource(R.string.create_list),
         style = Typography.h5,
         fontWeight = FontWeight.Bold,
         color = AppTheme.colors.black,
@@ -70,8 +73,13 @@ fun CreateListBottomSheet(
             formListModel = formListModel.copy(tag = it)
         },
         onDone = {
-            setVisible(false)
-            createList(formListModel)
+            if (formListModel.name.isEmpty()) {
+                isNameError = true
+            } else {
+                isNameError = false
+                executeFunction(formListModel)
+                setVisible(false)
+            }
         },
     )
 
@@ -88,13 +96,13 @@ fun CreateListBottomSheet(
     VerticalSpacer(24.dp)
 
     Button(
-        text = stringResource(R.string.form_create_list_button),
+        text = if (listModel != null) stringResource(R.string.form_edit_list_button) else stringResource(R.string.form_create_list_button),
         onClick = {
             if (formListModel.name.isEmpty()) {
                 isNameError = true
             } else {
                 isNameError = false
-                createList(formListModel)
+                executeFunction(formListModel)
                 setVisible(false)
             }
         },

@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:537286946756:android:7aae4c674d24c758453e91",
+        "mobilesdk_app_id": "1:537286946756:android:f6b29b517f5f5137453e91",
         "android_client_info": {
-          "package_name": "com.example.hopshop"
+          "package_name": "pl.hincka.hopshop"
         }
       },
       "oauth_client": [],

@@ -66,33 +66,44 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.hopshop.R
-import com.example.hopshop.components.bottomSheet.BottomSheet
-import com.example.hopshop.components.bottomSheet.CreateItemBottomSheet
-import com.example.hopshop.components.dropdownMenu.DropdownMenu
-import com.example.hopshop.components.infoContainer.InfoContainer
-import com.example.hopshop.components.modalDialog.FormModalDialog
-import com.example.hopshop.components.modalDialog.ModalDialog
-import com.example.hopshop.data.model.ItemModel
-import com.example.hopshop.data.model.ItemsCountModel
-import com.example.hopshop.data.model.ListModel
-import com.example.hopshop.data.model.UserModel
-import com.example.hopshop.data.util.AccountUserState
-import com.example.hopshop.data.util.DropdownMenuItemData
-import com.example.hopshop.presentation.auth.signIn.BackgroundShapes
-import com.example.hopshop.presentation.components.LoadingDialog
-import com.example.hopshop.presentation.dashboard.ShareListState
-import com.example.hopshop.presentation.destinations.DashboardScreenDestination
-import com.example.hopshop.presentation.main.SnackbarHandler
-import com.example.hopshop.presentation.main.bottomBarPadding
-import com.example.hopshop.ui.theme.AppTheme
-import com.example.hopshop.ui.theme.Typography
+import pl.hincka.hopshop.R
+import pl.hincka.hopshop.components.bottomSheet.BottomSheet
+import pl.hincka.hopshop.components.bottomSheet.CreateItemBottomSheet
+import pl.hincka.hopshop.components.bottomSheet.CreateListBottomSheet
+import pl.hincka.hopshop.components.dropdownMenu.DropdownMenu
+import pl.hincka.hopshop.components.infoContainer.InfoContainer
+import pl.hincka.hopshop.components.modalDialog.FormModalDialog
+import pl.hincka.hopshop.components.modalDialog.ModalDialog
+import pl.hincka.hopshop.data.model.FormListModel
+import pl.hincka.hopshop.data.model.ItemModel
+import pl.hincka.hopshop.data.model.ItemsCountModel
+import pl.hincka.hopshop.data.model.ListModel
+import pl.hincka.hopshop.data.model.UserModel
+import pl.hincka.hopshop.data.util.AccountUserState
+import pl.hincka.hopshop.data.util.DropdownMenuItemData
+import pl.hincka.hopshop.presentation.auth.signIn.BackgroundShapes
+import pl.hincka.hopshop.presentation.components.LoadingDialog
+import pl.hincka.hopshop.presentation.dashboard.CreateListState
+import pl.hincka.hopshop.presentation.dashboard.ShareListState
+import pl.hincka.hopshop.presentation.destinations.DashboardScreenDestination
+import pl.hincka.hopshop.presentation.main.SnackbarHandler
+import pl.hincka.hopshop.presentation.main.bottomBarPadding
+import pl.hincka.hopshop.ui.theme.AppTheme
+import pl.hincka.hopshop.ui.theme.Typography
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import pl.hincka.hopshop.presentation.list.ClearListItemsState
+import pl.hincka.hopshop.presentation.list.CreateItemState
+import pl.hincka.hopshop.presentation.list.ItemsCountState
+import pl.hincka.hopshop.presentation.list.ItemsState
+import pl.hincka.hopshop.presentation.list.ListState
+import pl.hincka.hopshop.presentation.list.ListViewModel
+import pl.hincka.hopshop.presentation.list.RemoveItemState
+import pl.hincka.hopshop.presentation.list.RemoveListState
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Destination
@@ -113,12 +124,13 @@ fun ListScreen(
     val removeItemState = viewModel.removeItemState.collectAsState().value
     val shareListState = viewModel.shareListState.collectAsState().value
     val clearListItemsState = viewModel.clearListItemsState.collectAsState().value
+    val createListState = viewModel.createListState.collectAsState().value
 
     if (removeListState is RemoveListState.Success) {
         navigator.navigate(DashboardScreenDestination(message = "Pomyślnie usunięto listę"))
     }
 
-    LaunchedEffect(shareListState, clearListItemsState, removeItemState) {
+    LaunchedEffect(shareListState, clearListItemsState, removeItemState, createListState) {
         launch {
             if (shareListState is ShareListState.Error) snackbarHandler.showErrorSnackbar(message = shareListState.message)
             if (clearListItemsState is ClearListItemsState.Error) snackbarHandler.showErrorSnackbar(
@@ -143,6 +155,14 @@ fun ListScreen(
 
             if (removeItemState is RemoveItemState.Error) snackbarHandler.showErrorSnackbar(
                 message = "Wystąpił błąd podczas usuwania"
+            )
+
+            if (createListState is CreateListState.Success) snackbarHandler.showSuccessSnackbar(
+                message = "Pomyślnie zmieniono listę"
+            )
+
+            if (createListState is CreateListState.Error) snackbarHandler.showErrorSnackbar(
+                message = "Wystąpił błąd podczas edycji listy"
             )
         }
     }
@@ -170,8 +190,10 @@ fun ListScreen(
                         removeItem = viewModel::removeItem,
                         removeList = viewModel::removeList,
                         createItemState = createItemState,
+                        createListState = createListState,
                         createItem = viewModel::createItem,
                         clearListItems = viewModel::clearListItems,
+                        editList = viewModel::editList,
                         user = accountUserState.user,
                     )
                 }
@@ -195,11 +217,14 @@ fun ListLayout(
     removeItem: (String) -> Unit,
     removeList: (String) -> Unit,
     createItemState: CreateItemState,
+    createListState: CreateListState,
     createItem: (String, String) -> Unit,
+    editList: (FormListModel) -> Unit,
     clearListItems: () -> Unit,
     user: UserModel,
 ) {
     var isCreateItemDialogVisible by remember { mutableStateOf(false) }
+    var isEditListDialogVisible by remember { mutableStateOf(false) }
     var isDropdownMenuVisible by remember { mutableStateOf(false) }
     var isModalActive by remember { mutableStateOf(false) }
     var isShareListDialogVisible by remember { mutableStateOf(false) }
@@ -212,7 +237,7 @@ fun ListLayout(
             icon = Icons.Outlined.Edit,
             text = stringResource(R.string.edit_list),
             onClick = {
-//                navigator.navigate(CreateListScreenDestination(listId = list.id))
+                isEditListDialogVisible = true
             }
         ),
 //        DropdownMenuItemData(
@@ -445,6 +470,32 @@ fun ListLayout(
                     listId = list.id,
                     createItemState = createItemState,
                     createItem = createItem,
+                )
+            }
+        }
+
+        if (user.isModalAlternativeEnable) {
+            FormModalDialog(
+                isVisible = isEditListDialogVisible,
+                setVisible = { isEditListDialogVisible = it },
+            ) {
+                CreateListBottomSheet(
+                    setVisible = { isEditListDialogVisible = it },
+                    executeFunction = editList,
+                    createListState = createListState,
+                    listModel = list,
+                )
+            }
+        } else {
+            BottomSheet(
+                isVisible = isEditListDialogVisible,
+                setVisible = { isEditListDialogVisible = it },
+            ) {
+                CreateListBottomSheet(
+                    setVisible = { isEditListDialogVisible = it },
+                    executeFunction = editList,
+                    createListState = createListState,
+                    listModel = list,
                 )
             }
         }

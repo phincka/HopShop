@@ -1,4 +1,4 @@
-package com.example.hopshop.presentation.auth.base
+package pl.hincka.hopshop.presentation.auth.base
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -19,14 +19,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.hopshop.R
-import com.example.hopshop.components.buttons.Button
-import com.example.hopshop.presentation.auth.signIn.BackgroundShapes
-import com.example.hopshop.presentation.destinations.SignInScreenDestination
-import com.example.hopshop.components.design.VerticalSpacer
-import com.example.hopshop.presentation.main.bottomBarPadding
-import com.example.hopshop.ui.theme.AppTheme
-import com.example.hopshop.ui.theme.Typography
+import pl.hincka.hopshop.R
+import pl.hincka.hopshop.components.buttons.Button
+import pl.hincka.hopshop.presentation.auth.signIn.BackgroundShapes
+import pl.hincka.hopshop.presentation.destinations.SignInScreenDestination
+import pl.hincka.hopshop.components.design.VerticalSpacer
+import pl.hincka.hopshop.presentation.main.bottomBarPadding
+import pl.hincka.hopshop.ui.theme.AppTheme
+import pl.hincka.hopshop.ui.theme.Typography
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 

@@ -1,20 +1,23 @@
-package com.example.hopshop.presentation.list
+package pl.hincka.hopshop.presentation.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.hopshop.data.model.ItemModel
-import com.example.hopshop.data.model.ItemsCountModel
-import com.example.hopshop.data.model.ListModel
-import com.example.hopshop.data.util.AccountUserState
-import com.example.hopshop.domain.usecase.auth.GetCurrentUserUseCase
-import com.example.hopshop.domain.usecase.item.CreateItemUseCase
-import com.example.hopshop.domain.usecase.item.GetItemsByListIdUseCase
-import com.example.hopshop.domain.usecase.item.RemoveItemUseCase
-import com.example.hopshop.domain.usecase.item.SetItemSelectedUseCase
-import com.example.hopshop.domain.usecase.list.ClearListItemsUseCase
-import com.example.hopshop.domain.usecase.list.GetListByIdUseCase
-import com.example.hopshop.domain.usecase.list.RemoveListUseCase
-import com.example.hopshop.presentation.dashboard.ShareListState
+import pl.hincka.hopshop.data.model.FormListModel
+import pl.hincka.hopshop.data.model.ItemModel
+import pl.hincka.hopshop.data.model.ItemsCountModel
+import pl.hincka.hopshop.data.model.ListModel
+import pl.hincka.hopshop.data.util.AccountUserState
+import pl.hincka.hopshop.domain.usecase.auth.GetCurrentUserUseCase
+import pl.hincka.hopshop.domain.usecase.item.CreateItemUseCase
+import pl.hincka.hopshop.domain.usecase.item.GetItemsByListIdUseCase
+import pl.hincka.hopshop.domain.usecase.item.RemoveItemUseCase
+import pl.hincka.hopshop.domain.usecase.item.SetItemSelectedUseCase
+import pl.hincka.hopshop.domain.usecase.list.ClearListItemsUseCase
+import pl.hincka.hopshop.domain.usecase.list.EditListUseCase
+import pl.hincka.hopshop.domain.usecase.list.GetListByIdUseCase
+import pl.hincka.hopshop.domain.usecase.list.RemoveListUseCase
+import pl.hincka.hopshop.presentation.dashboard.CreateListState
+import pl.hincka.hopshop.presentation.dashboard.ShareListState
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,6 +37,7 @@ class ListViewModel(
     private val removeListUseCase: RemoveListUseCase,
     private val clearListItemsUseCase: ClearListItemsUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val editListUseCase: EditListUseCase,
     firebaseFireStore: FirebaseFirestore,
 ) : ViewModel() {
     private val _accountUserState = MutableStateFlow<AccountUserState>(AccountUserState.None)
@@ -72,6 +76,10 @@ class ListViewModel(
     private val _shareListState: MutableStateFlow<ShareListState> =
         MutableStateFlow(ShareListState.None)
     val shareListState: StateFlow<ShareListState> = _shareListState
+
+    private val _createListState: MutableStateFlow<CreateListState> = MutableStateFlow(
+        CreateListState.None)
+    val createListState: StateFlow<CreateListState> = _createListState
 
     init {
         getCurrentUser()
@@ -204,6 +212,26 @@ class ListViewModel(
                 _clearListItemsState.value = ClearListItemsState.Error("${e.message}")
             }
         }
+    }
+
+    fun editList(formListModel: FormListModel) {
+        _createListState.value = CreateListState.Loading
+        viewModelScope.launch {
+            try {
+                _createListState.value = editListUseCase(
+                    listId = listId,
+                    name = formListModel.name,
+                    tag = formListModel.tag,
+                    description = formListModel.description,
+                )
+
+                getListById(listId = listId)
+                _createListState.value = CreateListState.Success
+            } catch (e: Exception) {
+                _createListState.value = CreateListState.Error("${e.message}")
+            }
+        }
+
     }
 }
 

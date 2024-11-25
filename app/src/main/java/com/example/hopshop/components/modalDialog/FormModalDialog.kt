@@ -1,4 +1,4 @@
-package com.example.hopshop.components.modalDialog
+package pl.hincka.hopshop.components.modalDialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -14,9 +14,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.hopshop.components.buttons.Button
-import com.example.hopshop.components.buttons.SmallButton
-import com.example.hopshop.ui.theme.AppTheme
+import pl.hincka.hopshop.components.buttons.Button
+import pl.hincka.hopshop.components.buttons.SmallButton
+import pl.hincka.hopshop.ui.theme.AppTheme
 
 @Composable
 fun FormModalDialog(

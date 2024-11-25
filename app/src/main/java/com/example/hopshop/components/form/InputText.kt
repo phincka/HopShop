@@ -1,4 +1,4 @@
-package com.example.hopshop.components.form
+package pl.hincka.hopshop.components.form
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,10 +16,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.example.hopshop.R
-import com.example.hopshop.components.design.VerticalSpacer
-import com.example.hopshop.ui.theme.AppTheme
-import com.example.hopshop.ui.theme.Typography
+import pl.hincka.hopshop.R
+import pl.hincka.hopshop.components.design.VerticalSpacer
+import pl.hincka.hopshop.ui.theme.AppTheme
+import pl.hincka.hopshop.ui.theme.Typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

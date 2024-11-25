@@ -1,4 +1,4 @@
-package com.example.hopshop.ui.theme
+package pl.hincka.hopshop.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

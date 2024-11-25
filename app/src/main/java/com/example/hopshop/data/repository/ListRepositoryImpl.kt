@@ -1,15 +1,15 @@
-package com.example.hopshop.data.repository
+package pl.hincka.hopshop.data.repository
 
 import android.util.Log
-import com.example.hopshop.data.model.FormListModel
-import com.example.hopshop.data.model.ItemsCountModel
-import com.example.hopshop.data.model.ListModel
-import com.example.hopshop.domain.repository.ListRepository
-import com.example.hopshop.presentation.dashboard.CreateListState
-import com.example.hopshop.presentation.dashboard.ListsState
-import com.example.hopshop.presentation.dashboard.RemoveSharedListState
-import com.example.hopshop.presentation.dashboard.ShareListState
-import com.example.hopshop.presentation.list.RemoveListState
+import pl.hincka.hopshop.data.model.FormListModel
+import pl.hincka.hopshop.data.model.ItemsCountModel
+import pl.hincka.hopshop.data.model.ListModel
+import pl.hincka.hopshop.domain.repository.ListRepository
+import pl.hincka.hopshop.presentation.dashboard.CreateListState
+import pl.hincka.hopshop.presentation.dashboard.ListsState
+import pl.hincka.hopshop.presentation.dashboard.RemoveSharedListState
+import pl.hincka.hopshop.presentation.dashboard.ShareListState
+import pl.hincka.hopshop.presentation.list.RemoveListState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Filter
@@ -199,7 +199,7 @@ class ListRepositoryImpl(
                             ),
                         )
 
-                    continuation.resume(CreateListState.Redirect(listId = listId))
+                    continuation.resume(CreateListState.Success)
                 }
             } else {
                 continuation.resume(CreateListState.Error("hive_state_no_user"))

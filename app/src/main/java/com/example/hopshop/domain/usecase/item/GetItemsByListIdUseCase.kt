@@ -1,9 +1,9 @@
-package com.example.hopshop.domain.usecase.item
+package pl.hincka.hopshop.domain.usecase.item
 
-import com.example.hopshop.data.model.ItemModel
-import com.example.hopshop.data.model.ListModel
-import com.example.hopshop.domain.repository.ItemsRepository
-import com.example.hopshop.domain.repository.ListRepository
+import pl.hincka.hopshop.data.model.ItemModel
+import pl.hincka.hopshop.data.model.ListModel
+import pl.hincka.hopshop.domain.repository.ItemsRepository
+import pl.hincka.hopshop.domain.repository.ListRepository
 import org.koin.core.annotation.Single
 
 @Single

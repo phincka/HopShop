@@ -1,4 +1,4 @@
-//package com.example.hopshop.presentation.components
+//package pl.hincka.hopshop.presentation.components
 //
 //import androidx.compose.foundation.layout.fillMaxSize
 //import androidx.compose.material.icons.Icons
@@ -9,7 +9,7 @@
 //import androidx.compose.material3.Text
 //import androidx.compose.runtime.Composable
 //import androidx.compose.ui.Modifier
-//import com.example.pszzapp.presentation.destinations.OverviewScreenDestination
+//import pl.hincka.pszzapp.presentation.destinations.OverviewScreenDestination
 //import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 //
 //@Composable

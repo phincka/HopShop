@@ -1,4 +1,4 @@
-package com.example.hopshop.presentation.main
+package pl.hincka.hopshop.presentation.main
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateDpAsState
@@ -40,8 +40,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.hopshop.presentation.destinations.AccountScreenDestination
-import com.example.hopshop.presentation.destinations.DashboardScreenDestination
+import pl.hincka.hopshop.presentation.destinations.AccountScreenDestination
+import pl.hincka.hopshop.presentation.destinations.DashboardScreenDestination
 import com.ramcosta.composedestinations.navigation.clearBackStack
 import com.ramcosta.composedestinations.navigation.popBackStack
 import com.ramcosta.composedestinations.navigation.popUpTo

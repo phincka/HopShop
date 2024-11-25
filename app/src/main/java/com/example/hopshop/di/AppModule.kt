@@ -1,8 +1,8 @@
-package com.example.hopshop.di
+package pl.hincka.hopshop.di
 
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 
 @Module(includes = [DataKoinModule::class])
-@ComponentScan("com.example.hopshop")
+@ComponentScan("pl.hincka.hopshop")
 class AppModule

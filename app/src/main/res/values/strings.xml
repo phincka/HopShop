@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HopShop</string>
+    <string name="app_name">PełenKoszyk</string>
 
     <!-- SignIn screen start -->
     <string name="signIn_title">Logowanie</string>
@@ -113,7 +113,7 @@
     <string name="required">To pole jest wymagane.</string>
 
     <string name="remove_modal_title">Usuń listę!</string>
-    <string name="remove_modal_text">Usuń?</string>
+    <string name="remove_modal_text">Czy na pewno chcesz usunąć listę?</string>
 
 
     <string name="empty_list_title">Lista jest pusta</string>
@@ -130,6 +130,7 @@
     <string name="form_email_label">Wpisz adres e-mail</string>
     <string name="form_description_label">Opis</string>
     <string name="form_create_list_button">Dodaj listę</string>
+    <string name="form_edit_list_button">Edytuj listę</string>
     <string name="form_create_item_label">Nazwa listy</string>
     <!-- Dashboard end -->
 

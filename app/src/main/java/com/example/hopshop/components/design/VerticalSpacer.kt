@@ -1,4 +1,4 @@
-package com.example.hopshop.components.design
+package pl.hincka.hopshop.components.design
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height

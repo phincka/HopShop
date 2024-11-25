@@ -1,6 +1,6 @@
-package com.example.hopshop.domain.usecase.auth
+package pl.hincka.hopshop.domain.usecase.auth
 
-import com.example.hopshop.domain.repository.AuthRepository
+import pl.hincka.hopshop.domain.repository.AuthRepository
 import org.koin.core.annotation.Single
 
 @Single

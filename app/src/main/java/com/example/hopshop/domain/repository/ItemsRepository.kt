@@ -1,9 +1,9 @@
-package com.example.hopshop.domain.repository
+package pl.hincka.hopshop.domain.repository
 
-import com.example.hopshop.data.model.ItemModel
-import com.example.hopshop.presentation.list.ClearListItemsState
-import com.example.hopshop.presentation.list.RemoveItemState
-import com.example.hopshop.presentation.list.SetItemSelectedState
+import pl.hincka.hopshop.data.model.ItemModel
+import pl.hincka.hopshop.presentation.list.ClearListItemsState
+import pl.hincka.hopshop.presentation.list.RemoveItemState
+import pl.hincka.hopshop.presentation.list.SetItemSelectedState
 
 interface ItemsRepository {
     suspend fun getItemsByListId(listId: String): List<ItemModel>
