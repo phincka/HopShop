@@ -22,13 +22,13 @@ import androidx.navigation.NavController
 import pl.hincka.hopshop.R
 import pl.hincka.hopshop.components.buttons.Button
 import pl.hincka.hopshop.presentation.auth.signIn.BackgroundShapes
-import pl.hincka.hopshop.presentation.destinations.SignInScreenDestination
 import pl.hincka.hopshop.components.design.VerticalSpacer
 import pl.hincka.hopshop.presentation.main.bottomBarPadding
 import pl.hincka.hopshop.ui.theme.AppTheme
 import pl.hincka.hopshop.ui.theme.Typography
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import pl.hincka.hopshop.nav.destinations.SignInScreenDestination
 
 @Destination
 @Composable

@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "pl.hincka.hopshop"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "pl.hincka.hopshop"
-        minSdk = 26
-        targetSdk = 34
+        minSdk = 35
+        targetSdk = 35
 
         versionCode = 2
         versionName = "1.2"
@@ -65,59 +65,64 @@ android {
     sourceSets {
         getByName("main").java.srcDirs("src/main/kotlin")
     }
+
+    // KSP configuration for Compose Destinations
+    ksp {
+        arg("compose-destinations.codeGenPackageName", "pl.hincka.hopshop.nav") // Zmien na odpowiedni pakiet
+    }
 }
 
 dependencies {
     // Compose Destinations
-    implementation("io.github.raamcosta.compose-destinations:core:1.10.1")
+    implementation(libs.core)
     implementation(libs.firebase.database.ktx)
-    ksp("io.github.raamcosta.compose-destinations:ksp:1.10.1")
-    implementation("io.github.raamcosta.compose-destinations:animations-core:1.10.1")
+    ksp(libs.ksp)
+    implementation(libs.animations.core)
 
     // Koin Dependency Injection
-    implementation("io.insert-koin:koin-android:3.5.3")
-    implementation("io.insert-koin:koin-androidx-compose:3.5.3")
-    implementation("io.insert-koin:koin-androidx-compose-navigation:3.5.3")
-    implementation("io.insert-koin:koin-annotations:1.3.1")
-    ksp("io.insert-koin:koin-ksp-compiler:1.3.1")
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.compose.navigation)
+    implementation(libs.koin.annotations)
+    ksp(libs.koin.ksp.compiler)
 
     // Firebase
-    implementation("com.google.firebase:firebase-auth:22.3.1")
-    implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
-    implementation("com.google.firebase:firebase-firestore")
+    implementation(libs.firebase.auth)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
 
     // Accompanist for insets
-    implementation("com.google.accompanist:accompanist-insets:0.23.0")
+    implementation(libs.accompanist.insets)
 
     // Icons and UI components
-    implementation("androidx.compose.material:material-icons-extended:1.6.4")
+    implementation(libs.androidx.material.icons.extended)
 
     // Dialogs
-    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
+    implementation(libs.datetime)
 
     // Image loading with Coil
-    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation(libs.coil.compose)
 
     // AndroidX core and lifecycle
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.activity:activity-compose:1.8.2")
+    implementation(libs.androidx.core.ktx.v1150)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v287)
+    implementation(libs.androidx.activity.compose.v1100)
 
     // Compose BOM (Bill of Materials)
-    implementation(platform("androidx.compose:compose-bom:2024.03.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
+    implementation(platform(libs.androidx.compose.bom.v20240300))
+    implementation(libs.ui)
+    implementation(libs.ui.graphics)
+    implementation(libs.ui.tooling.preview)
+    implementation(libs.material3)
 
     // Testing dependencies
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.03.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit.v121)
+    androidTestImplementation(libs.androidx.espresso.core.v361)
+    androidTestImplementation(platform(libs.androidx.compose.bom.v20250100))
+    androidTestImplementation(libs.ui.test.junit4)
 
     // Debugging tools
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    debugImplementation(libs.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
 }

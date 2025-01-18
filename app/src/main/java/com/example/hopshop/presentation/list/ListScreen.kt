@@ -85,7 +85,6 @@ import pl.hincka.hopshop.presentation.auth.signIn.BackgroundShapes
 import pl.hincka.hopshop.presentation.components.LoadingDialog
 import pl.hincka.hopshop.presentation.dashboard.CreateListState
 import pl.hincka.hopshop.presentation.dashboard.ShareListState
-import pl.hincka.hopshop.presentation.destinations.DashboardScreenDestination
 import pl.hincka.hopshop.presentation.main.SnackbarHandler
 import pl.hincka.hopshop.presentation.main.bottomBarPadding
 import pl.hincka.hopshop.ui.theme.AppTheme
@@ -96,6 +95,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import pl.hincka.hopshop.nav.destinations.DashboardScreenDestination
 import pl.hincka.hopshop.presentation.list.ClearListItemsState
 import pl.hincka.hopshop.presentation.list.CreateItemState
 import pl.hincka.hopshop.presentation.list.ItemsCountState

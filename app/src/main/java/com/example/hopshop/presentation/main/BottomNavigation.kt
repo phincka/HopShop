@@ -40,14 +40,14 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import pl.hincka.hopshop.presentation.destinations.AccountScreenDestination
-import pl.hincka.hopshop.presentation.destinations.DashboardScreenDestination
 import com.ramcosta.composedestinations.navigation.clearBackStack
 import com.ramcosta.composedestinations.navigation.popBackStack
 import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.Route
 import kotlinx.coroutines.launch
+import pl.hincka.hopshop.nav.destinations.AccountScreenDestination
+import pl.hincka.hopshop.nav.destinations.DashboardScreenDestination
 
 
 enum class BottomNavigationItems(

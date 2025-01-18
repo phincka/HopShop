@@ -43,9 +43,6 @@ import pl.hincka.hopshop.presentation.auth.signIn.BackgroundShapes
 import pl.hincka.hopshop.presentation.components.GroceryListItem
 import pl.hincka.hopshop.presentation.components.LoadingDialog
 import pl.hincka.hopshop.presentation.components.TextError
-import pl.hincka.hopshop.presentation.destinations.BaseAuthScreenDestination
-import pl.hincka.hopshop.presentation.destinations.ListScreenDestination
-import pl.hincka.hopshop.presentation.list.ClearListItemsState
 import pl.hincka.hopshop.presentation.main.SnackbarHandler
 import pl.hincka.hopshop.presentation.main.bottomBarPadding
 import com.ramcosta.composedestinations.annotation.Destination
@@ -53,6 +50,8 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import pl.hincka.hopshop.nav.destinations.BaseAuthScreenDestination
+import pl.hincka.hopshop.nav.destinations.ListScreenDestination
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @RootNavGraph(start = true)

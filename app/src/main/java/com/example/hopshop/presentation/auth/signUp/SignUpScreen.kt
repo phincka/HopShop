@@ -30,8 +30,6 @@ import pl.hincka.hopshop.data.util.AuthState
 import pl.hincka.hopshop.presentation.auth.signIn.BackgroundShapes
 import pl.hincka.hopshop.presentation.components.LoadingDialog
 import pl.hincka.hopshop.presentation.components.PasswordField
-import pl.hincka.hopshop.presentation.destinations.DashboardScreenDestination
-import pl.hincka.hopshop.presentation.destinations.SignInScreenDestination
 import pl.hincka.hopshop.presentation.main.SnackbarHandler
 import pl.hincka.hopshop.presentation.main.bottomBarPadding
 import pl.hincka.hopshop.ui.theme.AppTheme
@@ -40,6 +38,8 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import pl.hincka.hopshop.nav.destinations.DashboardScreenDestination
+import pl.hincka.hopshop.nav.destinations.SignInScreenDestination
 
 @Destination
 @Composable

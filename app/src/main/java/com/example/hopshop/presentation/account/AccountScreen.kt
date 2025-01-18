@@ -15,12 +15,12 @@ import pl.hincka.hopshop.data.util.AccountUserState
 import pl.hincka.hopshop.presentation.components.FilledButton
 import pl.hincka.hopshop.presentation.components.LoadingDialog
 import pl.hincka.hopshop.presentation.components.TextError
-import pl.hincka.hopshop.presentation.destinations.BaseAuthScreenDestination
 import pl.hincka.hopshop.presentation.main.bottomBarPadding
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import org.koin.androidx.compose.koinViewModel
+import pl.hincka.hopshop.nav.destinations.BaseAuthScreenDestination
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Destination
