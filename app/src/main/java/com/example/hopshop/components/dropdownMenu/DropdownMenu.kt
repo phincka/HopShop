@@ -40,25 +40,27 @@ fun DropdownMenu(
             modifier = Modifier.width(240.dp).background(AppTheme.colors.white)
         ) {
             menuItems.forEachIndexed { index, item ->
-                if (index == menuItems.size - 1 && menuItems.size > 1) {
-                    HorizontalDivider()
-                    Spacer(modifier = Modifier.height(6.dp))
-                }
+                if (!item.disabled) {
+                    val isLastEnabledItem = index == menuItems.lastIndex &&
+                            menuItems.size > 1 &&
+                            !menuItems[index - 1].disabled
 
-                DropdownMenuItem(
-                    text = {
-                        Text(item.text)
-                    },
-                    onClick = {
-                        item.onClick()
-                    },
-                    leadingIcon = {
-                        Icon(
-                            item.icon,
-                            contentDescription = null
-                        )
+                    if (isLastEnabledItem) {
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(6.dp))
                     }
-                )
+
+                    DropdownMenuItem(
+                        text = { Text(item.text) },
+                        onClick = { item.onClick() },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = item.icon,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
             }
         }
     }

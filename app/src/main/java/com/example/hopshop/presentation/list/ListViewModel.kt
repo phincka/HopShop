@@ -1,5 +1,6 @@
 package pl.hincka.hopshop.presentation.list
 
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import pl.hincka.hopshop.data.model.FormListModel
@@ -19,12 +20,17 @@ import pl.hincka.hopshop.domain.usecase.list.RemoveListUseCase
 import pl.hincka.hopshop.presentation.dashboard.CreateListState
 import pl.hincka.hopshop.presentation.dashboard.ShareListState
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.WriterException
+import com.google.zxing.qrcode.QRCodeWriter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
+import pl.hincka.hopshop.domain.usecase.list.GenerateShareCodeUseCase
+import pl.hincka.hopshop.domain.usecase.list.RemoveSharedListUseCase
 
 @KoinViewModel
 class ListViewModel(
@@ -35,9 +41,11 @@ class ListViewModel(
     private val setItemSelectedUseCase: SetItemSelectedUseCase,
     private val removeItemUseCase: RemoveItemUseCase,
     private val removeListUseCase: RemoveListUseCase,
+    private val removeSharedListUseCase: RemoveSharedListUseCase,
     private val clearListItemsUseCase: ClearListItemsUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val editListUseCase: EditListUseCase,
+    private val generateShareCodeUseCase: GenerateShareCodeUseCase,
     firebaseFireStore: FirebaseFirestore,
 ) : ViewModel() {
     private val _accountUserState = MutableStateFlow<AccountUserState>(AccountUserState.None)
@@ -69,6 +77,10 @@ class ListViewModel(
         MutableStateFlow(RemoveListState.None)
     val removeListState: StateFlow<RemoveListState> = _removeListState
 
+    private val _removeSharedListState: MutableStateFlow<RemoveSharedListState> =
+        MutableStateFlow(RemoveSharedListState.None)
+    val removeSharedListState: StateFlow<RemoveSharedListState> = _removeSharedListState
+
     private val _clearListItemsState: MutableStateFlow<ClearListItemsState> =
         MutableStateFlow(ClearListItemsState.None)
     val clearListItemsState: StateFlow<ClearListItemsState> = _clearListItemsState
@@ -80,6 +92,10 @@ class ListViewModel(
     private val _createListState: MutableStateFlow<CreateListState> = MutableStateFlow(
         CreateListState.None)
     val createListState: StateFlow<CreateListState> = _createListState
+
+    private val _generateShareCodeState: MutableStateFlow<GenerateShareCodeState> = MutableStateFlow(
+        GenerateShareCodeState.None)
+    val generateShareCodeState: StateFlow<GenerateShareCodeState> = _generateShareCodeState
 
     init {
         getCurrentUser()
@@ -164,13 +180,17 @@ class ListViewModel(
     }
 
     fun removeItem(
-        itemId: String,
+        itemId: String?,
     ) {
         _removeItemState.value = RemoveItemState.None
 
         viewModelScope.launch {
             try {
-                _removeItemState.value = removeItemUseCase(itemId = itemId)
+                if (itemId != null) {
+                    _removeItemState.value = removeItemUseCase(itemId = itemId)
+                } else {
+                    _removeItemState.value = RemoveItemState.Error("Brak id")
+                }
             } catch (e: Exception) {
                 _removeItemState.value = RemoveItemState.Error("${e.message}")
             }
@@ -203,6 +223,18 @@ class ListViewModel(
         }
     }
 
+    fun removeSharedList(
+        listId: String,
+    ) {
+        viewModelScope.launch {
+            try {
+                _removeSharedListState.value = removeSharedListUseCase(listId = listId)
+            } catch (e: Exception) {
+                _removeSharedListState.value = RemoveSharedListState.Error("${e.message}")
+            }
+        }
+    }
+
     fun clearListItems() {
         viewModelScope.launch {
             try {
@@ -231,7 +263,40 @@ class ListViewModel(
                 _createListState.value = CreateListState.Error("${e.message}")
             }
         }
+    }
 
+    fun generateShareListQrCode(listId: String) {
+        _generateShareCodeState.value = GenerateShareCodeState.Loading
+
+        viewModelScope.launch {
+            try {
+                val shareCode = generateShareCodeUseCase(
+                    listId = listId,
+                )
+
+                shareCode?.let { code ->
+                    val size = 512
+                    try {
+                        val qrCodeWriter = QRCodeWriter()
+                        val bitMatrix = qrCodeWriter.encode(code, BarcodeFormat.QR_CODE, size, size)
+                        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565)
+                        for (x in 0 until size) {
+                            for (y in 0 until size) {
+                                bitmap.setPixel(x, y, if (bitMatrix[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
+                            }
+                        }
+                        _generateShareCodeState.value = GenerateShareCodeState.Success(
+                            shareCode = code,
+                            bitmap = bitmap,
+                        )
+                    } catch (e: WriterException) {
+                        _generateShareCodeState.value = GenerateShareCodeState.Error("${e.message}")
+                    }
+                }
+            } catch (e: Exception) {
+                _generateShareCodeState.value = GenerateShareCodeState.Error("${e.message}")
+            }
+        }
     }
 }
 
@@ -278,8 +343,25 @@ sealed class RemoveListState {
     data class Error(val message: String) : RemoveListState()
 }
 
+sealed class RemoveSharedListState {
+    data object None : RemoveSharedListState()
+    data object Loading : RemoveSharedListState()
+    data object Success : RemoveSharedListState()
+    data class Error(val message: String) : RemoveSharedListState()
+}
+
 sealed class ClearListItemsState {
     data object None : ClearListItemsState()
     data object Success : ClearListItemsState()
     data class Error(val message: String) : ClearListItemsState()
+}
+
+sealed class GenerateShareCodeState {
+    data object None : GenerateShareCodeState()
+    data object Loading : GenerateShareCodeState()
+    data class Success(
+        val shareCode: String,
+        val bitmap: Bitmap?,
+    ) : GenerateShareCodeState()
+    data class Error(val message: String) : GenerateShareCodeState()
 }

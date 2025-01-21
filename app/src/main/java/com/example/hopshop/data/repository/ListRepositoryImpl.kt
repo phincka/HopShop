@@ -7,7 +7,6 @@ import pl.hincka.hopshop.data.model.ListModel
 import pl.hincka.hopshop.domain.repository.ListRepository
 import pl.hincka.hopshop.presentation.dashboard.CreateListState
 import pl.hincka.hopshop.presentation.dashboard.ListsState
-import pl.hincka.hopshop.presentation.dashboard.RemoveSharedListState
 import pl.hincka.hopshop.presentation.dashboard.ShareListState
 import pl.hincka.hopshop.presentation.list.RemoveListState
 import com.google.firebase.auth.FirebaseAuth
@@ -16,6 +15,7 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.koin.core.annotation.Single
+import pl.hincka.hopshop.presentation.list.RemoveSharedListState
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -38,7 +38,7 @@ class ListRepositoryImpl(
                 .where(
                     Filter.or(
                         Filter.equalTo("ownerId", currentUser.uid),
-                        Filter.arrayContains("sharedIds", currentUser.email)
+                        Filter.arrayContains("sharedIds", currentUser.uid)
                     )
                 )
                 .get()
@@ -107,6 +107,41 @@ class ListRepositoryImpl(
                             )
 
                             continuation.resume(list)
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        continuation.resumeWithException(exception)
+                    }
+            } ?: continuation.resume(null)
+        }
+
+    override suspend fun getListByShareCode(shareCode: String): ListModel? =
+        suspendCoroutine { continuation ->
+
+            firebaseAuth.currentUser?.let { currentUser ->
+                firebaseFireStore
+                    .collection("lists")
+                    .whereEqualTo("shareCode", shareCode)
+                    .get()
+                    .addOnSuccessListener { documentSnapshot ->
+                        if (documentSnapshot.documents.isNotEmpty()) {
+                            val hiveData = documentSnapshot.documents.first()
+                            val sharedIds = hiveData["sharedIds"] as? List<String> ?: listOf("")
+
+                            val list = ListModel(
+                                id = hiveData.id,
+                                ownerId = hiveData["ownerId"] as? String ?: "",
+                                name = hiveData["name"] as? String ?: "",
+                                description = hiveData["description"] as? String ?: "",
+                                tag = hiveData["tag"] as? String ?: "",
+                                shareCode = hiveData["shareCode"] as? String ?: "",
+                                sharedIds = sharedIds,
+                                isShared = currentUser.uid in sharedIds,
+                            )
+
+                            continuation.resume(list)
+                        } else {
+                            continuation.resume(null)
                         }
                     }
                     .addOnFailureListener { exception ->
@@ -208,7 +243,6 @@ class ListRepositoryImpl(
 
     override suspend fun shareList(
         listId: String,
-        email: String,
     ): ShareListState =
         suspendCancellableCoroutine { continuation ->
             if (firebaseAuth.currentUser != null) {
@@ -217,34 +251,60 @@ class ListRepositoryImpl(
 
                     listRef.get()
                         .addOnSuccessListener { documentSnapshot ->
-                            val sharedIds =
-                                documentSnapshot.toObject(ListModel::class.java)?.sharedIds
-
-                            if (sharedIds != null && sharedIds.contains(email)) {
+                            val sharedIds = documentSnapshot.toObject(ListModel::class.java)?.sharedIds
+                            if (sharedIds != null && sharedIds.contains(currentUser.uid)) {
                                 continuation.resume(ShareListState.Error("Ten użytkownik ma dostęp do tej listy."))
-                            } else {
-                                listRef.update("sharedIds", FieldValue.arrayUnion(email))
-                                    .addOnSuccessListener {
+                            }
+
+                            listRef.update("sharedIds", FieldValue.arrayUnion(currentUser.uid))
+                                .addOnSuccessListener {
+                                    if (continuation.isActive) {
                                         continuation.resume(ShareListState.Success)
                                     }
-                                    .addOnFailureListener { exception ->
+                                }
+                                .addOnFailureListener { exception ->
+                                    if (continuation.isActive) {
                                         continuation.resume(ShareListState.Error("${exception.message}"))
                                     }
-                            }
+                                }
                         }
                         .addOnFailureListener { exception ->
-                            continuation.resume(ShareListState.Error("${exception.message}"))
+                            if (continuation.isActive) {
+                                continuation.resume(ShareListState.Error("${exception.message}"))
+                            }
                         }
-
                 }
             } else {
                 continuation.resume(ShareListState.Error("hive_state_no_user"))
             }
         }
 
+    override suspend fun generateShareCode(
+        listId: String,
+    ): String? =
+        suspendCancellableCoroutine { continuation ->
+            if (firebaseAuth.currentUser != null) {
+                firebaseAuth.currentUser?.let {
+                    val shareCode = getRandomCharacters(listId)
+
+                    firebaseFireStore
+                        .collection("lists")
+                        .document(listId)
+                        .update(
+                            mapOf(
+                                "shareCode" to shareCode,
+                            ),
+                        )
+
+                    continuation.resume(shareCode)
+                }
+            } else {
+                continuation.resume(null)
+            }
+        }
+
     override suspend fun removeSharedList(
         listId: String,
-        email: String,
     ): RemoveSharedListState =
         suspendCancellableCoroutine { continuation ->
             if (firebaseAuth.currentUser != null) {
@@ -253,38 +313,29 @@ class ListRepositoryImpl(
 
                     listRef.get()
                         .addOnSuccessListener { documentSnapshot ->
-                            val sharedIds =
-                                documentSnapshot.toObject(ListModel::class.java)?.sharedIds
+                            val sharedIds = documentSnapshot.toObject(ListModel::class.java)?.sharedIds
 
-                            if (sharedIds != null && !sharedIds.contains(email)) {
-                                Log.d("LOG_H", "Ten użytkownik nie ma dostępu do tej listy.")
-                                Log.d("LOG_H", email)
-
-                                continuation.resume(RemoveSharedListState.Error("Ten użytkownik nie ma dostępu do tej listy."))
-                            } else {
-                                listRef.update("sharedIds", FieldValue.arrayRemove(email))
+                            if (sharedIds != null && sharedIds.contains(currentUser.uid)) {
+                                listRef.update("sharedIds", FieldValue.arrayRemove(currentUser.uid))
                                     .addOnSuccessListener {
                                         continuation.resume(RemoveSharedListState.Success)
                                     }
                                     .addOnFailureListener { exception ->
-
-                                        Log.d("LOG_H", "${exception.message}")
-
                                         continuation.resume(RemoveSharedListState.Error("${exception.message}"))
                                     }
+                            } else {
+                                continuation.resume(RemoveSharedListState.Error("Nie jesteś w tej liście"))
                             }
                         }
                         .addOnFailureListener { exception ->
-                            Log.d("LOG_H", "${exception.message}")
-
                             continuation.resume(RemoveSharedListState.Error("${exception.message}"))
                         }
-
                 }
             } else {
                 continuation.resume(RemoveSharedListState.Error("hive_state_no_user"))
             }
         }
+
 
     override suspend fun removeList(
         listId: String,
@@ -323,4 +374,12 @@ class ListRepositoryImpl(
                 continuation.resume(RemoveListState.Error("hive_state_no_user"))
             }
         }
+}
+
+private fun getRandomCharacters(input: String): String {
+    val count = 4
+    if (input.length < count) {
+        throw IllegalArgumentException("Input string must contain at least $count characters.")
+    }
+    return input.toList().shuffled().take(count).joinToString("")
 }

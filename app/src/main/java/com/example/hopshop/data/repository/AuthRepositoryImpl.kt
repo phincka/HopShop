@@ -37,7 +37,7 @@ class AuthRepositoryImpl(
 
                             listData?.let { data ->
                                 val userModel = UserModel(
-                                    uid = document.id,
+                                    uid = currentUser.uid,
                                     name = data["name"] as? String ?: "",
                                     email = data["email"] as? String ?: "",
                                     isModalAlternativeEnable = data["modalAlternativeEnable"] as? Boolean

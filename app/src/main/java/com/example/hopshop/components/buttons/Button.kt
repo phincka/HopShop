@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Button
 import pl.hincka.hopshop.ui.theme.AppTheme
 import pl.hincka.hopshop.ui.theme.Typography
 
@@ -24,7 +25,7 @@ fun Button(
     text: String,
     isLoading: Boolean = false,
 ) {
-    androidx.compose.material3.Button(
+    Button(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp),

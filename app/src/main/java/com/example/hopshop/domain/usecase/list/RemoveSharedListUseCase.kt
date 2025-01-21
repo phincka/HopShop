@@ -9,9 +9,7 @@ class RemoveSharedListUseCase(
 ) {
     suspend operator fun invoke(
         listId: String,
-        email: String,
     ) = listRepository.removeSharedList(
         listId = listId,
-        email = email
     )
 }

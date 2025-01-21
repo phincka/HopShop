@@ -5,15 +5,17 @@ import pl.hincka.hopshop.data.model.ItemsCountModel
 import pl.hincka.hopshop.data.model.ListModel
 import pl.hincka.hopshop.presentation.dashboard.CreateListState
 import pl.hincka.hopshop.presentation.dashboard.ListsState
-import pl.hincka.hopshop.presentation.dashboard.RemoveSharedListState
 import pl.hincka.hopshop.presentation.dashboard.ShareListState
 import pl.hincka.hopshop.presentation.list.RemoveListState
+import pl.hincka.hopshop.presentation.list.RemoveSharedListState
 
 
 interface ListRepository {
     suspend fun getLists(): ListsState
 
     suspend fun getListById(listId: String): ListModel?
+
+    suspend fun getListByShareCode(shareCode: String): ListModel?
 
     suspend fun getListItemsCount(listId: String): ItemsCountModel
 
@@ -28,12 +30,14 @@ interface ListRepository {
 
     suspend fun shareList(
         listId: String,
-        email: String,
     ): ShareListState
+
+    suspend fun generateShareCode(
+        listId: String,
+    ): String?
 
     suspend fun removeSharedList(
         listId: String,
-        email: String,
     ): RemoveSharedListState
 
     suspend fun removeList(listId: String): RemoveListState

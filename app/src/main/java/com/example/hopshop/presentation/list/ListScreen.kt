@@ -1,6 +1,8 @@
 package com.example.hopshop.presentation.list
 
 import android.annotation.SuppressLint
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +34,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -60,10 +63,16 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import pl.hincka.hopshop.R
@@ -98,12 +107,14 @@ import org.koin.core.parameter.parametersOf
 import pl.hincka.hopshop.nav.destinations.DashboardScreenDestination
 import pl.hincka.hopshop.presentation.list.ClearListItemsState
 import pl.hincka.hopshop.presentation.list.CreateItemState
+import pl.hincka.hopshop.presentation.list.GenerateShareCodeState
 import pl.hincka.hopshop.presentation.list.ItemsCountState
 import pl.hincka.hopshop.presentation.list.ItemsState
 import pl.hincka.hopshop.presentation.list.ListState
 import pl.hincka.hopshop.presentation.list.ListViewModel
 import pl.hincka.hopshop.presentation.list.RemoveItemState
 import pl.hincka.hopshop.presentation.list.RemoveListState
+import pl.hincka.hopshop.presentation.list.RemoveSharedListState
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Destination
@@ -120,14 +131,20 @@ fun ListScreen(
     val itemsState = viewModel.itemsState.collectAsState().value
     val itemsCountState = viewModel.itemsCountState.collectAsState().value
     val removeListState = viewModel.removeListState.collectAsState().value
+    val removeSharedListState = viewModel.removeSharedListState.collectAsState().value
     val createItemState = viewModel.createItemState.collectAsState().value
     val removeItemState = viewModel.removeItemState.collectAsState().value
     val shareListState = viewModel.shareListState.collectAsState().value
     val clearListItemsState = viewModel.clearListItemsState.collectAsState().value
     val createListState = viewModel.createListState.collectAsState().value
+    val generateShareCodeState = viewModel.generateShareCodeState.collectAsState().value
 
     if (removeListState is RemoveListState.Success) {
         navigator.navigate(DashboardScreenDestination(message = "Pomyślnie usunięto listę"))
+    }
+
+    if (removeSharedListState is RemoveSharedListState.Success) {
+        navigator.navigate(DashboardScreenDestination(message = "Pomyślnie usunięto udostępnioną listę"))
     }
 
     LaunchedEffect(shareListState, clearListItemsState, removeItemState, createListState) {
@@ -147,6 +164,10 @@ fun ListScreen(
 
             if (removeListState is RemoveListState.Error) snackbarHandler.showErrorSnackbar(
                 message = removeListState.message
+            )
+
+            if (removeSharedListState is RemoveSharedListState.Error) snackbarHandler.showErrorSnackbar(
+                message = removeSharedListState.message
             )
 
             if (removeItemState is RemoveItemState.Success) snackbarHandler.showSuccessSnackbar(
@@ -189,12 +210,15 @@ fun ListScreen(
                         setItemSelected = viewModel::setItemSelected,
                         removeItem = viewModel::removeItem,
                         removeList = viewModel::removeList,
+                        removeSharedList = viewModel::removeSharedList,
                         createItemState = createItemState,
                         createListState = createListState,
                         createItem = viewModel::createItem,
                         clearListItems = viewModel::clearListItems,
                         editList = viewModel::editList,
                         user = accountUserState.user,
+                        generateShareListQrCode = viewModel::generateShareListQrCode,
+                        generateShareCodeState = generateShareCodeState,
                     )
                 }
             }
@@ -214,22 +238,28 @@ fun ListLayout(
     itemsState: ItemsState,
     itemsCountState: ItemsCountState,
     setItemSelected: (String, Boolean) -> Unit,
-    removeItem: (String) -> Unit,
+    removeItem: (String?) -> Unit,
     removeList: (String) -> Unit,
+    removeSharedList: (String) -> Unit,
     createItemState: CreateItemState,
     createListState: CreateListState,
     createItem: (String, String) -> Unit,
     editList: (FormListModel) -> Unit,
     clearListItems: () -> Unit,
     user: UserModel,
+    generateShareListQrCode: (String) -> Unit,
+    generateShareCodeState: GenerateShareCodeState,
 ) {
     var isCreateItemDialogVisible by remember { mutableStateOf(false) }
     var isEditListDialogVisible by remember { mutableStateOf(false) }
     var isDropdownMenuVisible by remember { mutableStateOf(false) }
     var isModalActive by remember { mutableStateOf(false) }
+    var isRemoveItemModalActive by remember { mutableStateOf(false) }
     var isShareListDialogVisible by remember { mutableStateOf(false) }
 
     var isShoppingCompleteModalActive by remember { mutableStateOf(true) }
+
+    var removeItemId by remember { mutableStateOf<String?>(null) }
 
 
     val menuItems = listOf(
@@ -238,22 +268,26 @@ fun ListLayout(
             text = stringResource(R.string.edit_list),
             onClick = {
                 isEditListDialogVisible = true
-            }
+            },
+            disabled = list.sharedIds.contains(user.uid),
         ),
-//        DropdownMenuItemData(
-//            icon = Icons.Outlined.Share,
-//            text = stringResource(R.string.share),
-//            onClick = {
-//                isShareListDialogVisible = true
-//                isDropdownMenuVisible = false
-//            }
-//        ),
+        DropdownMenuItemData(
+            icon = Icons.Outlined.Share,
+            text = stringResource(R.string.share),
+            onClick = {
+                isShareListDialogVisible = true
+                isDropdownMenuVisible = false
+                generateShareListQrCode(list.id)
+            },
+            disabled = list.sharedIds.contains(user.uid),
+        ),
         DropdownMenuItemData(
             icon = Icons.Outlined.Clear,
             text = stringResource(R.string.remove_modal_title),
             onClick = {
                 isModalActive = true
-            }
+            },
+            disabled = false,
         ),
     )
 
@@ -285,7 +319,7 @@ fun ListLayout(
                                 color = AppTheme.colors.black,
                             )
 
-                            if (list.isShared) {
+                            if (list.sharedIds.contains(user.uid)) {
                                 Spacer(modifier = Modifier.width(8.dp))
 
                                 Icon(
@@ -401,15 +435,43 @@ fun ListLayout(
                 menuItems = menuItems
             )
 
+            if (list.sharedIds.contains(user.uid)) {
+                ModalDialog(
+                    dialogTitle = "Usuń udostępnioną listę",
+                    dialogText = "Czy na pewno chcesz usunąć udostępnioną listę?",
+                    confirmButtonText = stringResource(R.string.remove_modal_remove),
+                    dismissButtonText = stringResource(R.string.remove_modal_cancel),
+                    icon = Icons.Filled.Warning,
+                    isModalActive = isModalActive,
+                    onDismissRequest = { isModalActive = false },
+                    onConfirmation = { removeSharedList(list.id) },
+                )
+            } else {
+                ModalDialog(
+                    dialogTitle = stringResource(R.string.remove_modal_title),
+                    dialogText = stringResource(R.string.remove_modal_text),
+                    confirmButtonText = stringResource(R.string.remove_modal_remove),
+                    dismissButtonText = stringResource(R.string.remove_modal_cancel),
+                    icon = Icons.Filled.Warning,
+                    isModalActive = isModalActive,
+                    onDismissRequest = { isModalActive = false },
+                    onConfirmation = { removeList(list.id) },
+                )
+            }
+
             ModalDialog(
-                dialogTitle = stringResource(R.string.remove_modal_title),
-                dialogText = stringResource(R.string.remove_modal_text),
+                dialogTitle = "Usuń element listy",
+                dialogText = "Czy na pewno chcesz usunąć ten element?",
                 confirmButtonText = stringResource(R.string.remove_modal_remove),
                 dismissButtonText = stringResource(R.string.remove_modal_cancel),
                 icon = Icons.Filled.Warning,
-                isModalActive = isModalActive,
-                onDismissRequest = { isModalActive = false },
-                onConfirmation = { removeList(list.id) },
+                isModalActive = isRemoveItemModalActive,
+                onDismissRequest = { isRemoveItemModalActive = false },
+                onConfirmation = {
+                    removeItem(removeItemId)
+                    removeItemId = null
+                    isRemoveItemModalActive = false
+                },
             )
         },
         floatingActionButton = {
@@ -435,7 +497,10 @@ fun ListLayout(
                     if (itemsState.items.isNotEmpty()) {
                         SwipeToDismiss(
                             items = itemsState.items,
-                            removeItem = removeItem,
+                            removeItem = { itemId ->
+                                isRemoveItemModalActive = true
+                                removeItemId = itemId
+                            },
                             setItemSelected = setItemSelected,
                         )
                     } else {
@@ -460,21 +525,6 @@ fun ListLayout(
                     createItem = createItem,
                 )
             }
-        } else {
-            BottomSheet(
-                isVisible = isCreateItemDialogVisible,
-                setVisible = { isCreateItemDialogVisible = it },
-            ) {
-                CreateItemBottomSheet(
-                    setVisible = { isCreateItemDialogVisible = it },
-                    listId = list.id,
-                    createItemState = createItemState,
-                    createItem = createItem,
-                )
-            }
-        }
-
-        if (user.isModalAlternativeEnable) {
             FormModalDialog(
                 isVisible = isEditListDialogVisible,
                 setVisible = { isEditListDialogVisible = it },
@@ -488,6 +538,17 @@ fun ListLayout(
             }
         } else {
             BottomSheet(
+                isVisible = isCreateItemDialogVisible,
+                setVisible = { isCreateItemDialogVisible = it },
+            ) {
+                CreateItemBottomSheet(
+                    setVisible = { isCreateItemDialogVisible = it },
+                    listId = list.id,
+                    createItemState = createItemState,
+                    createItem = createItem,
+                )
+            }
+            BottomSheet(
                 isVisible = isEditListDialogVisible,
                 setVisible = { isEditListDialogVisible = it },
             ) {
@@ -497,6 +558,62 @@ fun ListLayout(
                     createListState = createListState,
                     listModel = list,
                 )
+            }
+        }
+
+        FormModalDialog(
+            isVisible = isShareListDialogVisible,
+            setVisible = { isShareListDialogVisible = it },
+        ) {
+            when (generateShareCodeState) {
+                is GenerateShareCodeState.None -> Unit
+
+                is GenerateShareCodeState.Error -> {
+                    Column(
+                        modifier = Modifier.height(284.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = "Wystąpił błąd podczas generowania kodu udostępniania",
+                            style = Typography.p,
+                            color = AppTheme.colors.black,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+
+                is GenerateShareCodeState.Loading -> LoadingDialog(
+                    height = Modifier.height(284.dp)
+                )
+
+                is GenerateShareCodeState.Success -> {
+                    generateShareCodeState.bitmap?.let { bitmap ->
+                        Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = "Generated QR Code",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(256.dp),
+                            contentScale = ContentScale.Fit
+                        )
+
+                        Text(
+                            text = buildAnnotatedString {
+                                append("Kod udostępniania: ")
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.SemiBold,
+                                    )
+                                ) {
+                                    append(generateShareCodeState.shareCode)
+                                }
+                            },
+                            style = Typography.h5,
+                            color = AppTheme.colors.black,
+                        )
+                    }
+                }
             }
         }
     }
@@ -532,40 +649,17 @@ fun SwipeToDismissItem(
     setItemSelected: (String, Boolean) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val swipeToDismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { state ->
-            when (state) {
-                SwipeToDismissBoxValue.StartToEnd -> {
-                    coroutineScope.launch {
-                        delay(300)
-                        onRemove()
-                    }
-                    true
-                }
+    val swipeToDismissState = rememberSwipeToDismissBoxState()
 
-                SwipeToDismissBoxValue.EndToStart -> false
-                SwipeToDismissBoxValue.Settled -> false
-            }
-        }
-    )
-    val color: Color = when (swipeToDismissState.dismissDirection) {
-        SwipeToDismissBoxValue.StartToEnd -> {
-            AppTheme.colors.red
-        }
-
-        SwipeToDismissBoxValue.EndToStart -> {
-            Color.Transparent
-        }
-
-        SwipeToDismissBoxValue.Settled -> {
-            Color.Transparent
-        }
+    val backgroundColor = when (swipeToDismissState.dismissDirection) {
+        SwipeToDismissBoxValue.StartToEnd -> AppTheme.colors.red
+        else -> Color.Transparent
     }
 
     SwipeToDismissBox(
         state = swipeToDismissState,
         backgroundContent = {
-            DeleteBackground(color)
+            DeleteBackground(backgroundColor)
         },
         modifier = Modifier.clip(RoundedCornerShape(8.dp))
     ) {
@@ -575,6 +669,15 @@ fun SwipeToDismissItem(
         )
     }
 
+    LaunchedEffect(swipeToDismissState.currentValue) {
+        if (swipeToDismissState.currentValue == SwipeToDismissBoxValue.StartToEnd) {
+            coroutineScope.launch {
+                delay(300)
+                onRemove()
+                swipeToDismissState.snapTo(SwipeToDismissBoxValue.Settled)
+            }
+        }
+    }
 }
 
 @Composable

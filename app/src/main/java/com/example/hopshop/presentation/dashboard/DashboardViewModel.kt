@@ -1,5 +1,6 @@
 package pl.hincka.hopshop.presentation.dashboard
 
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import pl.hincka.hopshop.data.model.FormListModel
@@ -92,13 +93,6 @@ sealed class ShareListState {
     data object Loading : ShareListState()
     data object Success : ShareListState()
     data class Error(val message: String) : ShareListState()
-}
-
-sealed class RemoveSharedListState {
-    data object None : RemoveSharedListState()
-    data object Loading : RemoveSharedListState()
-    data object Success : RemoveSharedListState()
-    data class Error(val message: String) : RemoveSharedListState()
 }
 
 sealed class CreateListState {

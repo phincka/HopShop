@@ -1,6 +1,7 @@
 package pl.hincka.hopshop.components.bottomSheet
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -8,8 +9,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import pl.hincka.hopshop.R
 import pl.hincka.hopshop.components.buttons.Button
@@ -29,6 +35,7 @@ fun CreateListBottomSheet(
     executeFunction: (FormListModel) -> Unit,
     createListState: CreateListState,
     listModel: ListModel? = null,
+    navToQrScanner: (() -> Unit?)? = null,
 ) {
     if (createListState is CreateListState.Loading) LoadingDialog()
 
@@ -107,4 +114,27 @@ fun CreateListBottomSheet(
             }
         },
     )
+
+    navToQrScanner?.let {
+        VerticalSpacer(24.dp)
+
+        Text(
+            text = buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.SemiBold,
+                        textDecoration = TextDecoration.Underline,
+                    )
+                ) {
+                    append("Kliknij tutaj")
+                }
+                append(" aby dodać listę za pomocą kodu udostępniania.")
+            },
+            style = Typography.p,
+            color = AppTheme.colors.black,
+            modifier = Modifier.clickable(
+                onClick = { it() }
+            )
+        )
+    }
 }

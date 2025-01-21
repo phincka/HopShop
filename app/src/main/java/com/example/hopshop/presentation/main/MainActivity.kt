@@ -1,4 +1,4 @@
-package pl.hincka.hopshop.presentation.main
+package com.example.hopshop.presentation.main
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -23,6 +23,9 @@ import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultA
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.navigation.dependency
 import pl.hincka.hopshop.nav.NavGraphs
+import pl.hincka.hopshop.presentation.main.BottomNavigationBar
+import pl.hincka.hopshop.presentation.main.Snackbar
+import pl.hincka.hopshop.presentation.main.SnackbarHandler
 
 class MainActivity : ComponentActivity() {
     @OptIn(

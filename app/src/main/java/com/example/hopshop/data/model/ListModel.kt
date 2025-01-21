@@ -6,11 +6,12 @@ data class ListModel(
     val ownerId: String,
     val description: String,
     val tag: String,
+    val shareCode: String? = null,
     val sharedIds: List<String>,
     val isShared: Boolean,
 ) {
     constructor() : this(
-        "", "", "", "", "", emptyList(), false
+        "", "", "", "", "", null, emptyList(), false
     )
 }
 

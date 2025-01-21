@@ -52,6 +52,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import pl.hincka.hopshop.nav.destinations.BaseAuthScreenDestination
 import pl.hincka.hopshop.nav.destinations.ListScreenDestination
+import pl.hincka.hopshop.nav.destinations.QrScannerScreenDestination
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @RootNavGraph(start = true)
@@ -98,7 +99,8 @@ fun DashboardScreen(
                 createList = viewModel::createList,
                 createListState = createListState,
                 signOut = viewModel::signOut,
-                navigateToGroceryList = { navigator.navigate(ListScreenDestination(listId = it)) }
+                navigateToGroceryList = { navigator.navigate(ListScreenDestination(listId = it)) },
+                navigator = navigator,
             )
 
             is AccountUserState.GuestState -> navigator.navigate(BaseAuthScreenDestination)
@@ -119,6 +121,7 @@ fun DashboardLayout(
     createListState: CreateListState,
     signOut: () -> Unit,
     navigateToGroceryList: (String) -> Unit,
+    navigator: DestinationsNavigator,
 ) {
     Scaffold(
         topBar = {},
@@ -172,6 +175,7 @@ fun DashboardLayout(
                     setVisible = setVisible,
                     executeFunction = createList,
                     createListState = createListState,
+                    navToQrScanner = { navigator.navigate(QrScannerScreenDestination) }
                 )
             }
         } else {
@@ -183,6 +187,7 @@ fun DashboardLayout(
                     setVisible = setVisible,
                     executeFunction = createList,
                     createListState = createListState,
+                    navToQrScanner = { navigator.navigate(QrScannerScreenDestination) }
                 )
             }
         }
