@@ -1,24 +1,18 @@
 pluginManagement {
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
-        mavenCentral()
-        gradlePluginPortal()
+        google()  // Google repository
+        mavenCentral()  // Maven Central repository
+        gradlePluginPortal()  // Gradle Plugin Portal
     }
 }
+
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
-        mavenCentral()
+        google()  // Google repository
+        mavenCentral()  // Maven Central repository
+        maven { url = uri("https://jitpack.io") }  // JitPack repository if needed
     }
 }
 
 rootProject.name = "HopShop"
 include(":app")
- 
